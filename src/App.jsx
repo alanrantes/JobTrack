@@ -76,6 +76,7 @@ function App() {
   useEffect(() => {
     function atualizarQuantidadePorPagina() {
       setVagasPorPagina(calcularVagasPorPagina())
+      setPaginaAtual(1)
     }
 
     window.addEventListener('resize', atualizarQuantidadePorPagina)
@@ -126,29 +127,42 @@ function App() {
     Math.ceil(vagasFiltradas.length / vagasPorPagina)
   )
 
+  const paginaAtualValida = Math.min(
+    paginaAtual,
+    totalPaginas
+  )
+
   const vagasPaginadas = useMemo(() => {
-    const inicio = (paginaAtual - 1) * vagasPorPagina
+    const inicio = (paginaAtualValida - 1) * vagasPorPagina
 
     return vagasFiltradas.slice(
       inicio,
       inicio + vagasPorPagina
     )
-  }, [vagasFiltradas, paginaAtual, vagasPorPagina])
-
-  useEffect(() => {
-    setPaginaAtual(1)
   }, [
-    busca,
-    empresasSelecionadas,
-    statusSelecionados,
+    vagasFiltradas,
+    paginaAtualValida,
     vagasPorPagina,
   ])
 
-  useEffect(() => {
-    if (paginaAtual > totalPaginas) {
-      setPaginaAtual(totalPaginas)
-    }
-  }, [paginaAtual, totalPaginas])
+  function alterarBusca(valor) {
+    setBusca(valor)
+    setPaginaAtual(1)
+  }
+
+  function alterarEmpresas(empresasSelecionadasNovas) {
+    setEmpresasSelecionadas(empresasSelecionadasNovas)
+    setPaginaAtual(1)
+  }
+
+  function alterarStatus(statusSelecionadosNovos) {
+    setStatusSelecionados(statusSelecionadosNovos)
+    setPaginaAtual(1)
+  }
+
+  function alterarPagina(pagina) {
+    setPaginaAtual(pagina)
+  }
 
   function abrirNovaVaga() {
     setVagaEditando(null)
@@ -183,6 +197,7 @@ function App() {
     setBusca('')
     setEmpresasSelecionadas([])
     setStatusSelecionados([])
+    setPaginaAtual(1)
   }
 
   async function salvarVaga(vaga) {
@@ -253,11 +268,11 @@ function App() {
       <Filters
         empresas={empresas}
         busca={busca}
-        onBuscaChange={setBusca}
+        onBuscaChange={alterarBusca}
         empresasSelecionadas={empresasSelecionadas}
-        onEmpresasChange={setEmpresasSelecionadas}
+        onEmpresasChange={alterarEmpresas}
         statusSelecionados={statusSelecionados}
-        onStatusChange={setStatusSelecionados}
+        onStatusChange={alterarStatus}
         onClearFilters={limparFiltros}
       />
 
@@ -266,9 +281,9 @@ function App() {
         carregando={carregando}
         onEdit={abrirEdicao}
         onDelete={solicitarExclusao}
-        paginaAtual={paginaAtual}
+        paginaAtual={paginaAtualValida}
         totalPaginas={totalPaginas}
-        onPaginaChange={setPaginaAtual}
+        onPaginaChange={alterarPagina}
         totalFiltrado={vagasFiltradas.length}
         totalVagas={vagas.length}
         vagasPorPagina={vagasPorPagina}

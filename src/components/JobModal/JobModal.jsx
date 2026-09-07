@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './JobModal.css'
 import CustomSelect from './CustomSelect'
 import BrandLogo from '../BrandLogo/BrandLogo'
@@ -17,6 +17,22 @@ const FORMULARIO_INICIAL = {
   proximaEtapa: '',
 }
 
+function obterFormularioInicial(vagaEditando) {
+  if (!vagaEditando) {
+    return { ...FORMULARIO_INICIAL }
+  }
+
+  return {
+    empresa: vagaEditando.empresa || '',
+    vaga: vagaEditando.vaga || '',
+    plataforma: vagaEditando.plataforma || '',
+    data: vagaEditando.data_candidatura || '',
+    link: vagaEditando.link || '',
+    status: vagaEditando.status || 'Candidatado',
+    proximaEtapa: vagaEditando.proxima_etapa || '',
+  }
+}
+
 function obterDataHoje() {
   const hoje = new Date()
   const ano = hoje.getFullYear()
@@ -26,35 +42,15 @@ function obterDataHoje() {
   return `${ano}-${mes}-${dia}`
 }
 
-function JobModal({ isOpen, onClose, onSave, vagaEditando }) {
-  const [formulario, setFormulario] = useState(FORMULARIO_INICIAL)
+function JobModal({ onClose, onSave, vagaEditando }) {
+  const [formulario, setFormulario] = useState(() =>
+    obterFormularioInicial(vagaEditando)
+  )
   const [dropdownAberto, setDropdownAberto] = useState(null)
   const [salvando, setSalvando] = useState(false)
 
   const modoEdicao = Boolean(vagaEditando)
   const dataHoje = obterDataHoje()
-
-  useEffect(() => {
-    if (!isOpen) return
-
-    setFormulario(
-      vagaEditando
-        ? {
-            empresa: vagaEditando.empresa || '',
-            vaga: vagaEditando.vaga || '',
-            plataforma: vagaEditando.plataforma || '',
-            data: vagaEditando.data_candidatura || '',
-            link: vagaEditando.link || '',
-            status: vagaEditando.status || 'Candidatado',
-            proximaEtapa: vagaEditando.proxima_etapa || '',
-          }
-        : FORMULARIO_INICIAL
-    )
-
-    setDropdownAberto(null)
-  }, [isOpen, vagaEditando])
-
-  if (!isOpen) return null
 
   function atualizarCampo(event) {
     const { name, value } = event.target
@@ -120,7 +116,7 @@ function JobModal({ isOpen, onClose, onSave, vagaEditando }) {
     setSalvando(false)
 
     if (salvou) {
-      setFormulario(FORMULARIO_INICIAL)
+      setFormulario({ ...FORMULARIO_INICIAL })
       setDropdownAberto(null)
     }
   }
