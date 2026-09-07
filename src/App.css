@@ -2,11 +2,38 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 40px;
+  padding: 24px 40px 32px;
+}
+
+.auth-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.app-loader {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: app-loading 0.7s linear infinite;
+}
+
+@keyframes app-loading {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 600px) {
   .app {
-    padding: 24px 18px;
+    padding: 20px 18px 24px;
   }
 }
