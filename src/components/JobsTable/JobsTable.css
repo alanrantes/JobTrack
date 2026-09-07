@@ -1,0 +1,242 @@
+.jobs-table-container {
+  width: 100%;
+  margin-top: 24px;
+
+  overflow-x: auto;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.jobs-table {
+  width: 100%;
+  min-width: 1000px;
+
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+/* Cabeçalho */
+
+.jobs-table thead {
+  background-color: #f8fafc;
+}
+
+.jobs-table th {
+  padding: 14px 16px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Linhas */
+
+.jobs-table td {
+  padding: 15px 16px;
+
+  color: #334155;
+
+  font-size: 14px;
+
+  vertical-align: middle;
+
+  border-bottom: 1px solid #eef2f7;
+}
+
+.jobs-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.jobs-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.jobs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Empresa */
+
+.company-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 140px;
+
+  color: #111827;
+  font-weight: 600;
+}
+
+.company-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  background-color: #eff6ff;
+
+  border-radius: 8px;
+
+  color: #2563eb;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Status */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 6px 10px;
+
+  border-radius: 7px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+/* Candidatado */
+
+.status-candidatado {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+/* Entrevistas */
+
+.status-entrevista-rh,
+.status-entrevista-gestor {
+  background-color: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* Aguardando retorno */
+
+.status-aguardando-retorno-rh,
+.status-aguardando-retorno-gestor {
+  background-color: #fffbeb;
+  color: #b45309;
+}
+
+/* Teste técnico */
+
+.status-teste-tecnico {
+  background-color: #fff7ed;
+  color: #ea580c;
+}
+
+/* Aprovado */
+
+.status-aprovado {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+
+/* Reprovado */
+
+.status-reprovado {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Ações */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.edit-button {
+  color: #64748b;
+}
+
+.edit-button:hover {
+  color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.delete-button {
+  color: #dc2626;
+}
+
+.delete-button:hover {
+  color: #b91c1c;
+  background-color: #fef2f2;
+}
+
+/* Larguras */
+
+.jobs-table th:nth-child(1) {
+  width: 16%;
+}
+
+.jobs-table th:nth-child(2) {
+  width: 24%;
+}
+
+.jobs-table th:nth-child(3) {
+  width: 12%;
+}
+
+.jobs-table th:nth-child(4) {
+  width: 12%;
+}
+
+.jobs-table th:nth-child(5) {
+  width: 15%;
+}
+
+.jobs-table th:nth-child(6) {
+  width: 16%;
+}
+
+.jobs-table th:nth-child(7) {
+  width: 5%;
+}
+
+/* Responsividade */
+
+@media (max-width: 800px) {
+  .jobs-table-container {
+    margin-top: 18px;
+  }
+}
