@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './JobModal.css'
 import CustomSelect from './CustomSelect'
 import BrandLogo from '../BrandLogo/BrandLogo'
+
 import {
   PLATFORM_OPTIONS,
   STATUS_OPTIONS,
@@ -49,6 +50,13 @@ function JobModal({ onClose, onSave, vagaEditando }) {
   const [dropdownAberto, setDropdownAberto] = useState(null)
   const [salvando, setSalvando] = useState(false)
 
+  const [camposComErro, setCamposComErro] = useState({
+    empresa: false,
+    vaga: false,
+    plataforma: false,
+    data: false,
+  })
+
   const modoEdicao = Boolean(vagaEditando)
   const dataHoje = obterDataHoje()
 
@@ -59,6 +67,13 @@ function JobModal({ onClose, onSave, vagaEditando }) {
       ...atual,
       [name]: value,
     }))
+
+    if (camposComErro[name]) {
+      setCamposComErro((atual) => ({
+        ...atual,
+        [name]: false,
+      }))
+    }
   }
 
   function selecionar(campo, value) {
@@ -68,6 +83,13 @@ function JobModal({ onClose, onSave, vagaEditando }) {
     }))
 
     setDropdownAberto(null)
+
+    if (camposComErro[campo]) {
+      setCamposComErro((atual) => ({
+        ...atual,
+        [campo]: false,
+      }))
+    }
   }
 
   function alternarDropdown(nome) {
@@ -86,18 +108,27 @@ function JobModal({ onClose, onSave, vagaEditando }) {
   async function salvar(event) {
     event.preventDefault()
 
-    if (
-      !formulario.empresa.trim() ||
-      !formulario.vaga.trim() ||
-      !formulario.plataforma ||
-      !formulario.data
-    ) {
-      alert('Preencha Empresa, Vaga, Plataforma e Data.')
+    const novosErros = {
+      empresa: !formulario.empresa.trim(),
+      vaga: !formulario.vaga.trim(),
+      plataforma: !formulario.plataforma,
+      data: !formulario.data,
+    }
+
+    setCamposComErro(novosErros)
+
+    const possuiErro = Object.values(novosErros).some(Boolean)
+
+    if (possuiErro) {
       return
     }
 
     if (formulario.data > dataHoje) {
-      alert('A data da candidatura não pode ser futura.')
+      setCamposComErro((atual) => ({
+        ...atual,
+        data: true,
+      }))
+
       return
     }
 
@@ -118,6 +149,13 @@ function JobModal({ onClose, onSave, vagaEditando }) {
     if (salvou) {
       setFormulario({ ...FORMULARIO_INICIAL })
       setDropdownAberto(null)
+
+      setCamposComErro({
+        empresa: false,
+        vaga: false,
+        plataforma: false,
+        data: false,
+      })
     }
   }
 
@@ -178,6 +216,7 @@ function JobModal({ onClose, onSave, vagaEditando }) {
                 <div className="form-group">
                   <label htmlFor="empresa">
                     Empresa
+                    <span className="required-label">*</span>
                   </label>
 
                   <input
@@ -189,12 +228,18 @@ function JobModal({ onClose, onSave, vagaEditando }) {
                     onChange={atualizarCampo}
                     autoComplete="off"
                     disabled={salvando}
+                    className={
+                      camposComErro.empresa
+                        ? 'input-error'
+                        : ''
+                    }
                   />
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="vaga">
                     Vaga
+                    <span className="required-label">*</span>
                   </label>
 
                   <input
@@ -206,6 +251,11 @@ function JobModal({ onClose, onSave, vagaEditando }) {
                     onChange={atualizarCampo}
                     autoComplete="off"
                     disabled={salvando}
+                    className={
+                      camposComErro.vaga
+                        ? 'input-error'
+                        : ''
+                    }
                   />
                 </div>
               </div>
@@ -214,25 +264,35 @@ function JobModal({ onClose, onSave, vagaEditando }) {
                 <div className="form-group">
                   <label>
                     Plataforma
+                    <span className="required-label">*</span>
                   </label>
 
-                  <CustomSelect
-                    value={formulario.plataforma}
-                    options={PLATFORM_OPTIONS}
-                    isOpen={dropdownAberto === 'plataforma'}
-                    onToggle={() =>
-                      alternarDropdown('plataforma')
+                  <div
+                    className={
+                      camposComErro.plataforma
+                        ? 'custom-select-error'
+                        : ''
                     }
-                    onSelect={(value) =>
-                      selecionar('plataforma', value)
-                    }
-                    disabled={salvando}
-                  />
+                  >
+                    <CustomSelect
+                      value={formulario.plataforma}
+                      options={PLATFORM_OPTIONS}
+                      isOpen={dropdownAberto === 'plataforma'}
+                      onToggle={() =>
+                        alternarDropdown('plataforma')
+                      }
+                      onSelect={(value) =>
+                        selecionar('plataforma', value)
+                      }
+                      disabled={salvando}
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="data">
                     Data da candidatura
+                    <span className="required-label">*</span>
                   </label>
 
                   <input
@@ -243,6 +303,11 @@ function JobModal({ onClose, onSave, vagaEditando }) {
                     value={formulario.data}
                     onChange={atualizarCampo}
                     disabled={salvando}
+                    className={
+                      camposComErro.data
+                        ? 'input-error'
+                        : ''
+                    }
                   />
                 </div>
               </div>
@@ -270,9 +335,7 @@ function JobModal({ onClose, onSave, vagaEditando }) {
           )}
 
           <div className="form-group">
-            <label>
-              Status
-            </label>
+            <label>Status</label>
 
             <CustomSelect
               value={formulario.status}

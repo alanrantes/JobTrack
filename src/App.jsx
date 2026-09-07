@@ -289,12 +289,14 @@ function App() {
         vagasPorPagina={vagasPorPagina}
       />
 
-      <JobModal
-        isOpen={modalAberto}
-        onClose={fecharModal}
-        onSave={salvarVaga}
-        vagaEditando={vagaEditando}
-      />
+      {modalAberto && (
+        <JobModal
+          key={vagaEditando?.id ?? 'nova'}
+          onClose={fecharModal}
+          onSave={salvarVaga}
+          vagaEditando={vagaEditando}
+        />
+      )}
 
       <ConfirmModal
         isOpen={Boolean(vagaParaExcluir)}

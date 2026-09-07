@@ -88,6 +88,12 @@
   font-weight: 600;
 }
 
+.required-label {
+  margin-left: 3px;
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
 .optional-label {
   margin-left: 6px;
   color: var(--color-text-light);
@@ -105,6 +111,10 @@
   border-radius: var(--radius-md);
   color: var(--color-text);
   font-size: 14px;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .form-group input::placeholder,
@@ -117,6 +127,27 @@
 .custom-select-button.open {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.input-error {
+  border-color: var(--color-danger) !important;
+  background: #fffafa !important;
+}
+
+.input-error:focus {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+}
+
+.custom-select-error .custom-select-button {
+  border-color: var(--color-danger) !important;
+  background: #fffafa !important;
+}
+
+.custom-select-error .custom-select-button:focus,
+.custom-select-error .custom-select-button.open {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
 }
 
 .custom-select {
