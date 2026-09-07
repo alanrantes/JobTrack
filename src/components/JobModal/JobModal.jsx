@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import './JobModal.css'
+import CustomSelect from './CustomSelect'
+import BrandLogo from '../BrandLogo/BrandLogo'
 
 const STATUS_OPTIONS = [
   'Candidatado',
@@ -31,61 +33,12 @@ const FORMULARIO_INICIAL = {
   proximaEtapa: '',
 }
 
-function CustomSelect({
-  value,
-  placeholder,
-  options,
-  aberto,
-  onToggle,
-  onSelect,
-  disabled,
-}) {
-  return (
-    <div className="custom-select">
-      <button
-        type="button"
-        className="custom-select-button"
-        onClick={onToggle}
-        disabled={disabled}
-      >
-        <span className={!value ? 'placeholder' : ''}>
-          {value || placeholder}
-        </span>
-
-        <span className="custom-select-arrow" aria-hidden="true">
-          ⌄
-        </span>
-      </button>
-
-      {aberto && (
-        <div className="custom-select-options">
-          {options.map((option) => (
-            <button
-              key={option}
-              type="button"
-              className={`custom-select-option ${
-                value === option ? 'selected' : ''
-              }`}
-              onClick={() => onSelect(option)}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function JobModal({
-  isOpen,
-  onClose,
-  onSave,
-  vagaEditando,
-}) {
+function JobModal({ isOpen, onClose, onSave, vagaEditando }) {
   const [formulario, setFormulario] = useState(FORMULARIO_INICIAL)
   const [dropdownAberto, setDropdownAberto] = useState(null)
   const [salvando, setSalvando] = useState(false)
+
+  const modoEdicao = Boolean(vagaEditando)
 
   useEffect(() => {
     if (!isOpen) return
@@ -143,21 +96,11 @@ function JobModal({
   async function salvar(event) {
     event.preventDefault()
 
-    const {
-      empresa,
-      vaga,
-      plataforma,
-      data,
-      link,
-      status,
-      proximaEtapa,
-    } = formulario
-
     if (
-      !empresa.trim() ||
-      !vaga.trim() ||
-      !plataforma ||
-      !data
+      !formulario.empresa.trim() ||
+      !formulario.vaga.trim() ||
+      !formulario.plataforma ||
+      !formulario.data
     ) {
       alert('Preencha Empresa, Vaga, Plataforma e Data.')
       return
@@ -166,13 +109,13 @@ function JobModal({
     setSalvando(true)
 
     const salvou = await onSave({
-      empresa: empresa.trim(),
-      vaga: vaga.trim(),
-      plataforma,
-      data,
-      link: link.trim(),
-      status,
-      proximaEtapa: proximaEtapa.trim(),
+      empresa: formulario.empresa.trim(),
+      vaga: formulario.vaga.trim(),
+      plataforma: formulario.plataforma,
+      data: formulario.data,
+      link: formulario.link.trim(),
+      status: formulario.status,
+      proximaEtapa: formulario.proximaEtapa.trim(),
     })
 
     setSalvando(false)
@@ -186,18 +129,24 @@ function JobModal({
   return (
     <div className="modal-overlay" onMouseDown={fechar}>
       <div
-        className="job-modal"
+        className={`job-modal ${
+          modoEdicao ? 'job-modal-editing' : ''
+        }`}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="modal-header">
+        <div className="modal-header modal-header-centered">
           <div>
-            <h2>{vagaEditando ? 'Editar vaga' : 'Nova vaga'}</h2>
+            <h2>
+              {modoEdicao
+                ? 'Atualizar candidatura'
+                : 'Nova candidatura'}
+            </h2>
 
-            <p>
-              {vagaEditando
-                ? 'Atualize as informações da candidatura.'
-                : 'Adicione uma nova candidatura ao seu controle.'}
-            </p>
+            {!modoEdicao && (
+              <p>
+                Adicione uma nova oportunidade ao seu controle.
+              </p>
+            )}
           </div>
 
           <button
@@ -212,99 +161,130 @@ function JobModal({
         </div>
 
         <form className="job-form" onSubmit={salvar}>
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="empresa">Empresa</label>
+          {modoEdicao && (
+            <div className="editing-job-info">
+              <div className="editing-job-icon">
+                <BrandLogo
+                  name={formulario.empresa}
+                  size={32}
+                />
+              </div>
 
-              <input
-                id="empresa"
-                name="empresa"
-                type="text"
-                placeholder="Ex: Wabtec"
-                value={formulario.empresa}
-                onChange={atualizarCampo}
-                autoComplete="off"
-                disabled={salvando}
-              />
+              <div className="editing-job-text">
+                <strong>{formulario.vaga}</strong>
+                <span>{formulario.empresa}</span>
+              </div>
             </div>
+          )}
 
-            <div className="form-group">
-              <label htmlFor="vaga">Vaga</label>
+          {!modoEdicao && (
+            <>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="empresa">
+                    Empresa
+                  </label>
 
-              <input
-                id="vaga"
-                name="vaga"
-                type="text"
-                placeholder="Ex: Analista de Dados Jr"
-                value={formulario.vaga}
-                onChange={atualizarCampo}
-                autoComplete="off"
-                disabled={salvando}
-              />
-            </div>
-          </div>
+                  <input
+                    id="empresa"
+                    name="empresa"
+                    type="text"
+                    placeholder="Ex: Wabtec"
+                    value={formulario.empresa}
+                    onChange={atualizarCampo}
+                    autoComplete="off"
+                    disabled={salvando}
+                  />
+                </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Plataforma</label>
+                <div className="form-group">
+                  <label htmlFor="vaga">
+                    Vaga
+                  </label>
 
-              <CustomSelect
-                value={formulario.plataforma}
-                placeholder="Selecione"
-                options={PLATFORM_OPTIONS}
-                aberto={dropdownAberto === 'plataforma'}
-                onToggle={() => alternarDropdown('plataforma')}
-                onSelect={(value) =>
-                  selecionar('plataforma', value)
-                }
-                disabled={salvando}
-              />
-            </div>
+                  <input
+                    id="vaga"
+                    name="vaga"
+                    type="text"
+                    placeholder="Ex: Analista de Dados Jr"
+                    value={formulario.vaga}
+                    onChange={atualizarCampo}
+                    autoComplete="off"
+                    disabled={salvando}
+                  />
+                </div>
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="data">
-                Data da candidatura
-              </label>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>
+                    Plataforma
+                  </label>
 
-              <input
-                id="data"
-                name="data"
-                type="date"
-                value={formulario.data}
-                onChange={atualizarCampo}
-                disabled={salvando}
-              />
-            </div>
-          </div>
+                  <CustomSelect
+                    value={formulario.plataforma}
+                    options={PLATFORM_OPTIONS}
+                    isOpen={dropdownAberto === 'plataforma'}
+                    onToggle={() =>
+                      alternarDropdown('plataforma')
+                    }
+                    onSelect={(value) =>
+                      selecionar('plataforma', value)
+                    }
+                    disabled={salvando}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="data">
+                    Data da candidatura
+                  </label>
+
+                  <input
+                    id="data"
+                    name="data"
+                    type="date"
+                    value={formulario.data}
+                    onChange={atualizarCampo}
+                    disabled={salvando}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="link">
+                  Link da vaga
+                  <span className="optional-label">
+                    Opcional
+                  </span>
+                </label>
+
+                <input
+                  id="link"
+                  name="link"
+                  type="url"
+                  placeholder="Cole o link da vaga"
+                  value={formulario.link}
+                  onChange={atualizarCampo}
+                  autoComplete="off"
+                  disabled={salvando}
+                />
+              </div>
+            </>
+          )}
 
           <div className="form-group">
-            <label htmlFor="link">
-              Link da vaga
-              <span className="optional-label">
-                Opcional
-              </span>
+            <label>
+              Status
             </label>
-
-            <input
-              id="link"
-              name="link"
-              type="url"
-              placeholder="Cole o link da vaga"
-              value={formulario.link}
-              onChange={atualizarCampo}
-              autoComplete="off"
-              disabled={salvando}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Status</label>
 
             <CustomSelect
               value={formulario.status}
               options={STATUS_OPTIONS}
-              aberto={dropdownAberto === 'status'}
-              onToggle={() => alternarDropdown('status')}
+              isOpen={dropdownAberto === 'status'}
+              onToggle={() =>
+                alternarDropdown('status')
+              }
               onSelect={(value) =>
                 selecionar('status', value)
               }
@@ -332,16 +312,7 @@ function JobModal({
             />
           </div>
 
-          <div className="modal-actions">
-            <button
-              type="button"
-              className="cancel-button"
-              onClick={fechar}
-              disabled={salvando}
-            >
-              Cancelar
-            </button>
-
+          <div className="modal-actions modal-actions-full">
             <button
               type="submit"
               className="save-button"
@@ -349,9 +320,9 @@ function JobModal({
             >
               {salvando
                 ? 'Salvando...'
-                : vagaEditando
+                : modoEdicao
                   ? 'Salvar alterações'
-                  : 'Salvar vaga'}
+                  : 'Adicionar vaga'}
             </button>
           </div>
         </form>
