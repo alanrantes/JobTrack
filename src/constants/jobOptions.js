@@ -14,6 +14,10 @@ export const PLATFORM_OPTIONS = [
   'Gupy',
   'Indeed',
   'Glassdoor',
+  'InfoJobs',
+  'Sólides',
+  'Nerdin',
+  'Remotar',
   'Site da empresa',
   'Outro',
 ]
