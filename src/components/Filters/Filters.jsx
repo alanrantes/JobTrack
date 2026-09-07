@@ -1,16 +1,6 @@
 import { useState } from 'react'
 import './Filters.css'
-
-const STATUS_OPTIONS = [
-  'Candidatado',
-  'Entrevista RH',
-  'Aguardando retorno RH',
-  'Entrevista Gestor',
-  'Aguardando retorno Gestor',
-  'Teste Técnico',
-  'Aprovado',
-  'Reprovado',
-]
+import { STATUS_OPTIONS } from '../../constants/jobOptions.js'
 
 function alternarSelecao(item, selecionados, onChange) {
   const novaSelecao = selecionados.includes(item)

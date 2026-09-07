@@ -7,9 +7,23 @@ import SummaryCards from './components/SummaryCards/SummaryCards'
 import Filters from './components/Filters/Filters'
 import JobsTable from './components/JobsTable/JobsTable'
 import JobModal from './components/JobModal/JobModal'
-import { supabase } from './lib/supabase'
+import ConfirmModal from './components/ConfirmModal/ConfirmModal'
 
-const VAGAS_POR_PAGINA = 8
+import {
+  atualizarVaga,
+  buscarVagas,
+  criarVaga,
+  excluirVaga,
+} from './services/vagasService'
+
+function calcularVagasPorPagina() {
+  const altura = window.innerHeight
+
+  if (altura >= 1100) return 12
+  if (altura >= 900) return 9
+
+  return 8
+}
 
 function prepararVagaParaBanco(vaga) {
   return {
@@ -30,18 +44,21 @@ function App() {
   const [modalAberto, setModalAberto] = useState(false)
   const [vagaEditando, setVagaEditando] = useState(null)
 
+  const [vagaParaExcluir, setVagaParaExcluir] = useState(null)
+  const [excluindo, setExcluindo] = useState(false)
+
   const [busca, setBusca] = useState('')
   const [empresasSelecionadas, setEmpresasSelecionadas] = useState([])
   const [statusSelecionados, setStatusSelecionados] = useState([])
 
   const [paginaAtual, setPaginaAtual] = useState(1)
+  const [vagasPorPagina, setVagasPorPagina] = useState(
+    calcularVagasPorPagina
+  )
 
   useEffect(() => {
     async function carregarVagas() {
-      const { data, error } = await supabase
-        .from('vagas')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const { data, error } = await buscarVagas()
 
       if (error) {
         console.error('Erro ao buscar vagas:', error)
@@ -54,6 +71,21 @@ function App() {
     }
 
     carregarVagas()
+  }, [])
+
+  useEffect(() => {
+    function atualizarQuantidadePorPagina() {
+      setVagasPorPagina(calcularVagasPorPagina())
+    }
+
+    window.addEventListener('resize', atualizarQuantidadePorPagina)
+
+    return () => {
+      window.removeEventListener(
+        'resize',
+        atualizarQuantidadePorPagina
+      )
+    }
   }, [])
 
   const empresas = useMemo(
@@ -91,21 +123,26 @@ function App() {
 
   const totalPaginas = Math.max(
     1,
-    Math.ceil(vagasFiltradas.length / VAGAS_POR_PAGINA)
+    Math.ceil(vagasFiltradas.length / vagasPorPagina)
   )
 
   const vagasPaginadas = useMemo(() => {
-    const inicio = (paginaAtual - 1) * VAGAS_POR_PAGINA
+    const inicio = (paginaAtual - 1) * vagasPorPagina
 
     return vagasFiltradas.slice(
       inicio,
-      inicio + VAGAS_POR_PAGINA
+      inicio + vagasPorPagina
     )
-  }, [vagasFiltradas, paginaAtual])
+  }, [vagasFiltradas, paginaAtual, vagasPorPagina])
 
   useEffect(() => {
     setPaginaAtual(1)
-  }, [busca, empresasSelecionadas, statusSelecionados])
+  }, [
+    busca,
+    empresasSelecionadas,
+    statusSelecionados,
+    vagasPorPagina,
+  ])
 
   useEffect(() => {
     if (paginaAtual > totalPaginas) {
@@ -128,6 +165,20 @@ function App() {
     setVagaEditando(null)
   }
 
+  function solicitarExclusao(id) {
+    const vaga = vagas.find((item) => item.id === id)
+
+    if (vaga) {
+      setVagaParaExcluir(vaga)
+    }
+  }
+
+  function cancelarExclusao() {
+    if (excluindo) return
+
+    setVagaParaExcluir(null)
+  }
+
   function limparFiltros() {
     setBusca('')
     setEmpresasSelecionadas([])
@@ -138,12 +189,10 @@ function App() {
     const dados = prepararVagaParaBanco(vaga)
 
     if (vagaEditando) {
-      const { data, error } = await supabase
-        .from('vagas')
-        .update(dados)
-        .eq('id', vagaEditando.id)
-        .select()
-        .single()
+      const { data, error } = await atualizarVaga(
+        vagaEditando.id,
+        dados
+      )
 
       if (error) {
         console.error('Erro ao atualizar vaga:', error)
@@ -157,11 +206,7 @@ function App() {
         )
       )
     } else {
-      const { data, error } = await supabase
-        .from('vagas')
-        .insert(dados)
-        .select()
-        .single()
+      const { data, error } = await criarVaga(dados)
 
       if (error) {
         console.error('Erro ao salvar vaga:', error)
@@ -177,25 +222,26 @@ function App() {
     return true
   }
 
-  async function excluirVaga(id) {
-    if (!window.confirm('Tem certeza que deseja excluir esta vaga?')) {
-      return
-    }
+  async function confirmarExclusao() {
+    if (!vagaParaExcluir) return
 
-    const { error } = await supabase
-      .from('vagas')
-      .delete()
-      .eq('id', id)
+    setExcluindo(true)
+
+    const { error } = await excluirVaga(vagaParaExcluir.id)
 
     if (error) {
       console.error('Erro ao excluir vaga:', error)
       alert('Não foi possível excluir a vaga.')
+      setExcluindo(false)
       return
     }
 
     setVagas((atuais) =>
-      atuais.filter((vaga) => vaga.id !== id)
+      atuais.filter((vaga) => vaga.id !== vagaParaExcluir.id)
     )
+
+    setExcluindo(false)
+    setVagaParaExcluir(null)
   }
 
   return (
@@ -219,13 +265,13 @@ function App() {
         vagas={vagasPaginadas}
         carregando={carregando}
         onEdit={abrirEdicao}
-        onDelete={excluirVaga}
+        onDelete={solicitarExclusao}
         paginaAtual={paginaAtual}
         totalPaginas={totalPaginas}
         onPaginaChange={setPaginaAtual}
         totalFiltrado={vagasFiltradas.length}
         totalVagas={vagas.length}
-        vagasPorPagina={VAGAS_POR_PAGINA}
+        vagasPorPagina={vagasPorPagina}
       />
 
       <JobModal
@@ -233,6 +279,19 @@ function App() {
         onClose={fecharModal}
         onSave={salvarVaga}
         vagaEditando={vagaEditando}
+      />
+
+      <ConfirmModal
+        isOpen={Boolean(vagaParaExcluir)}
+        title="Excluir candidatura"
+        message={
+          vagaParaExcluir
+            ? `Tem certeza que deseja excluir a vaga "${vagaParaExcluir.vaga}" da ${vagaParaExcluir.empresa}?`
+            : ''
+        }
+        onConfirm={confirmarExclusao}
+        onCancel={cancelarExclusao}
+        loading={excluindo}
       />
     </main>
   )

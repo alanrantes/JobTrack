@@ -2,26 +2,10 @@ import { useEffect, useState } from 'react'
 import './JobModal.css'
 import CustomSelect from './CustomSelect'
 import BrandLogo from '../BrandLogo/BrandLogo'
-
-const STATUS_OPTIONS = [
-  'Candidatado',
-  'Entrevista RH',
-  'Aguardando retorno RH',
-  'Entrevista Gestor',
-  'Aguardando retorno Gestor',
-  'Teste Técnico',
-  'Aprovado',
-  'Reprovado',
-]
-
-const PLATFORM_OPTIONS = [
-  'LinkedIn',
-  'Gupy',
-  'Indeed',
-  'Glassdoor',
-  'Site da empresa',
-  'Outro',
-]
+import {
+  PLATFORM_OPTIONS,
+  STATUS_OPTIONS,
+} from '../../constants/jobOptions.js'
 
 const FORMULARIO_INICIAL = {
   empresa: '',
