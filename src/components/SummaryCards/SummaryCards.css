@@ -1,0 +1,113 @@
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 74px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+.summary-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 9px;
+}
+
+.summary-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-card-content strong {
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.summary-card-content span {
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.summary-card-blue {
+  background-color: #eff6ff;
+  border-color: #e0edff;
+}
+
+.summary-card-blue .summary-card-icon {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.summary-card-green {
+  background-color: #ecfdf5;
+  border-color: #dcfce7;
+}
+
+.summary-card-green .summary-card-icon {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.summary-card-purple {
+  background-color: #f5f3ff;
+  border-color: #ede9fe;
+}
+
+.summary-card-purple .summary-card-icon {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+.summary-card-yellow {
+  background-color: #fffbeb;
+  border-color: #fef3c7;
+}
+
+.summary-card-yellow .summary-card-icon {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.summary-card-red {
+  background-color: #fef2f2;
+  border-color: #fee2e2;
+}
+
+.summary-card-red .summary-card-icon {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+@media (max-width: 1050px) {
+  .summary-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .summary-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}

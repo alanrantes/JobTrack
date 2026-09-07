@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
 import Header from './components/Header/Header'
+import SummaryCards from './components/SummaryCards/SummaryCards'
 import Filters from './components/Filters/Filters'
 import JobsTable from './components/JobsTable/JobsTable'
 import JobModal from './components/JobModal/JobModal'
@@ -227,6 +228,8 @@ function App() {
   return (
     <main className="app">
       <Header onNewJob={abrirModalNovaVaga} />
+
+      <SummaryCards vagas={vagas} />
 
       <Filters
         empresas={empresas}
