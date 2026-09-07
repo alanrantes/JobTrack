@@ -20,7 +20,6 @@
 
 .jobs-table thead,
 .jobs-table tbody tr:hover,
-.actions button:hover,
 .pagination-button:hover,
 .pagination-arrow:hover:not(:disabled) {
   background: var(--color-surface-soft);
@@ -152,26 +151,33 @@
   width: 32px;
   height: 32px;
   padding: 0;
-  background: var(--color-surface-soft);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
   transition:
     background var(--transition-fast),
     border-color var(--transition-fast),
     color var(--transition-fast);
 }
 
+.edit-button {
+  color: var(--color-primary);
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+}
+
 .edit-button:hover {
-  color: var(--color-primary) !important;
-  background: #eff6ff !important;
-  border-color: #bfdbfe !important;
+  background: #dbeafe;
+  border-color: #bfdbfe;
+}
+
+.delete-button {
+  color: var(--color-danger);
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
 }
 
 .delete-button:hover {
-  color: var(--color-danger) !important;
-  background: #fef2f2 !important;
-  border-color: #fecaca !important;
+  background: #fee2e2;
+  border-color: #fecaca;
 }
 
 .table-message {

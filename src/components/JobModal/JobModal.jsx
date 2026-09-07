@@ -33,12 +33,22 @@ const FORMULARIO_INICIAL = {
   proximaEtapa: '',
 }
 
+function obterDataHoje() {
+  const hoje = new Date()
+  const ano = hoje.getFullYear()
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0')
+  const dia = String(hoje.getDate()).padStart(2, '0')
+
+  return `${ano}-${mes}-${dia}`
+}
+
 function JobModal({ isOpen, onClose, onSave, vagaEditando }) {
   const [formulario, setFormulario] = useState(FORMULARIO_INICIAL)
   const [dropdownAberto, setDropdownAberto] = useState(null)
   const [salvando, setSalvando] = useState(false)
 
   const modoEdicao = Boolean(vagaEditando)
+  const dataHoje = obterDataHoje()
 
   useEffect(() => {
     if (!isOpen) return
@@ -103,6 +113,11 @@ function JobModal({ isOpen, onClose, onSave, vagaEditando }) {
       !formulario.data
     ) {
       alert('Preencha Empresa, Vaga, Plataforma e Data.')
+      return
+    }
+
+    if (formulario.data > dataHoje) {
+      alert('A data da candidatura não pode ser futura.')
       return
     }
 
@@ -244,6 +259,7 @@ function JobModal({ isOpen, onClose, onSave, vagaEditando }) {
                     id="data"
                     name="data"
                     type="date"
+                    max={dataHoje}
                     value={formulario.data}
                     onChange={atualizarCampo}
                     disabled={salvando}
