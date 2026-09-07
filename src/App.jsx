@@ -1,6 +1,7 @@
 import './App.css'
 
 import Auth from './components/Auth/Auth'
+import UpdatePassword from './components/Auth/UpdatePassword'
 import JobDashboard from './components/JobDashboard/JobDashboard'
 
 import { useAuth } from './hooks/useAuth'
@@ -10,8 +11,13 @@ function App() {
     sessao,
     verificandoSessao,
     saindo,
+
+    recuperandoSenha,
+
     nomeUsuario,
+
     logout,
+    finalizarRecuperacaoSenha,
   } = useAuth()
 
   if (verificandoSessao) {
@@ -23,6 +29,16 @@ function App() {
           Carregando JobTrack...
         </span>
       </main>
+    )
+  }
+
+  if (recuperandoSenha) {
+    return (
+      <UpdatePassword
+        onSuccess={
+          finalizarRecuperacaoSenha
+        }
+      />
     )
   }
 

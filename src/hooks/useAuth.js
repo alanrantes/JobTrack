@@ -25,9 +25,19 @@ function obterNomeUsuario(sessao) {
 
 export function useAuth() {
   const [sessao, setSessao] = useState(null)
-  const [verificandoSessao, setVerificandoSessao] =
-    useState(true)
-  const [saindo, setSaindo] = useState(false)
+
+  const [
+    verificandoSessao,
+    setVerificandoSessao,
+  ] = useState(true)
+
+  const [saindo, setSaindo] =
+    useState(false)
+
+  const [
+    recuperandoSenha,
+    setRecuperandoSenha,
+  ] = useState(false)
 
   useEffect(() => {
     async function verificarSessao() {
@@ -50,10 +60,19 @@ export function useAuth() {
     verificarSessao()
 
     const subscription =
-      observarAutenticacao((session) => {
-        setSessao(session)
-        setVerificandoSessao(false)
-      })
+      observarAutenticacao(
+        (event, session) => {
+          setSessao(session)
+
+          if (
+            event === 'PASSWORD_RECOVERY'
+          ) {
+            setRecuperandoSenha(true)
+          }
+
+          setVerificandoSessao(false)
+        }
+      )
 
     return () => {
       subscription.unsubscribe()
@@ -78,10 +97,29 @@ export function useAuth() {
       )
 
       setSaindo(false)
+
       return false
     }
 
     setSaindo(false)
+
+    return true
+  }
+
+  async function finalizarRecuperacaoSenha() {
+    const { error } = await sair()
+
+    if (error) {
+      console.error(
+        'Erro ao encerrar recuperação:',
+        error
+      )
+
+      return false
+    }
+
+    setRecuperandoSenha(false)
+
     return true
   }
 
@@ -89,8 +127,13 @@ export function useAuth() {
     sessao,
     verificandoSessao,
     saindo,
+
+    recuperandoSenha,
+
     nomeUsuario:
       obterNomeUsuario(sessao),
+
     logout,
+    finalizarRecuperacaoSenha,
   }
 }

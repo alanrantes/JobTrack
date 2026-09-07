@@ -38,8 +38,8 @@ export function observarAutenticacao(callback) {
   const {
     data: { subscription },
   } = supabase.auth.onAuthStateChange(
-    (_event, session) => {
-      callback(session)
+    (event, session) => {
+      callback(event, session)
     }
   )
 
