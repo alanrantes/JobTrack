@@ -15,56 +15,65 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 42px;
   height: 42px;
-
-  border-radius: 10px;
-
-  background: #2563eb;
-  color: #ffffff;
-
-  font-size: 20px;
-  font-weight: 700;
+  flex-shrink: 0;
+  color: #111827;
 }
 
 .brand-text h1 {
-  font-size: 24px;
-  font-weight: 700;
   color: #111827;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
 }
 
 .brand-text p {
   margin-top: 3px;
-  font-size: 14px;
   color: #64748b;
+  font-size: 13px;
 }
 
 .new-job-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  padding: 11px 18px;
-
+  gap: 7px;
+  height: 42px;
+  padding: 0 17px;
+  background-color: #2563eb;
   border: none;
   border-radius: 8px;
-
-  background-color: #2563eb;
   color: #ffffff;
-
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-
-  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.18);
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .new-job-button:hover {
   background-color: #1d4ed8;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
 }
 
 .new-job-button span {
-  font-size: 22px;
-  font-weight: 300;
+  font-size: 19px;
+  font-weight: 400;
   line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .header {
+    align-items: flex-start;
+  }
+
+  .brand-text p {
+    display: none;
+  }
+
+  .new-job-button {
+    padding: 0 13px;
+  }
 }

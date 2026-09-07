@@ -1,34 +1,5 @@
 import './JobsTable.css'
-
-const vagas = [
-  {
-    id: 1,
-    empresa: 'Wabtec',
-    vaga: 'Jr Customer Integration Analyst',
-    data: '03/09/2026',
-    plataforma: 'LinkedIn',
-    status: 'Candidatado',
-    proximaEtapa: '-',
-  },
-  {
-    id: 2,
-    empresa: 'SolvePlan',
-    vaga: 'Programa de Estágio — TI',
-    data: '02/09/2026',
-    plataforma: 'Gupy',
-    status: 'Entrevista RH',
-    proximaEtapa: 'Entrevista dia 10/09 às 14h',
-  },
-  {
-    id: 3,
-    empresa: 'Grupo Zelo',
-    vaga: 'Analista de Dados Jr',
-    data: '01/09/2026',
-    plataforma: 'Indeed',
-    status: 'Aguardando retorno RH',
-    proximaEtapa: '-',
-  },
-]
+import BrandLogo from '../BrandLogo/BrandLogo'
 
 function gerarClasseStatus(status) {
   return status
@@ -38,103 +9,246 @@ function gerarClasseStatus(status) {
     .replace(/\s+/g, '-')
 }
 
-function JobsTable() {
+function formatarData(data) {
+  if (!data) {
+    return '-'
+  }
+
+  const [ano, mes, dia] = data.split('-')
+
+  return `${dia}/${mes}/${ano}`
+}
+
+function JobsTable({
+  vagas,
+  carregando,
+  onEdit,
+  onDelete,
+  paginaAtual,
+  totalPaginas,
+  onPaginaChange,
+  totalFiltrado,
+  totalVagas,
+  vagasPorPagina,
+}) {
+  const inicio =
+    totalFiltrado === 0
+      ? 0
+      : (paginaAtual - 1) * vagasPorPagina + 1
+
+  const fim = Math.min(
+    paginaAtual * vagasPorPagina,
+    totalFiltrado
+  )
+
   return (
     <section className="jobs-table-container">
-      <table className="jobs-table">
-        <thead>
-          <tr>
-            <th>Empresa</th>
-            <th>Vaga</th>
-            <th>Data</th>
-            <th>Plataforma</th>
-            <th>Status</th>
-            <th>Próxima etapa</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {vagas.map((vaga) => (
-            <tr key={vaga.id}>
-              <td>
-                <div className="company-cell">
-                  <div className="company-logo">
-                    {vaga.empresa.charAt(0)}
-                  </div>
-
-                  <span>{vaga.empresa}</span>
-                </div>
-              </td>
-
-              <td>{vaga.vaga}</td>
-
-              <td>{vaga.data}</td>
-
-              <td>{vaga.plataforma}</td>
-
-              <td>
-                <span
-                  className={`status-badge status-${gerarClasseStatus(
-                    vaga.status
-                  )}`}
-                >
-                  {vaga.status}
-                </span>
-              </td>
-
-              <td>{vaga.proximaEtapa}</td>
-
-              <td>
-                <div className="actions">
-                  <button
-                    type="button"
-                    className="edit-button"
-                    title="Editar vaga"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="17"
-                      height="17"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 20h9" />
-                      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
-                    </svg>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="delete-button"
-                    title="Excluir vaga"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="17"
-                      height="17"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 6h18" />
-                      <path d="M8 6V4h8v2" />
-                      <path d="M19 6l-1 14H6L5 6" />
-                      <path d="M10 11v5" />
-                      <path d="M14 11v5" />
-                    </svg>
-                  </button>
-                </div>
-              </td>
+      <div className="table-scroll">
+        <table className="jobs-table">
+          <thead>
+            <tr>
+              <th>Empresa</th>
+              <th>Vaga</th>
+              <th>Data candidatura</th>
+              <th>Plataforma</th>
+              <th>Status</th>
+              <th>Próxima etapa</th>
+              <th>Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {carregando ? (
+              <tr>
+                <td colSpan="7" className="table-message">
+                  Carregando vagas...
+                </td>
+              </tr>
+            ) : vagas.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="table-message">
+                  Nenhuma vaga encontrada.
+                </td>
+              </tr>
+            ) : (
+              vagas.map((vaga) => (
+                <tr key={vaga.id}>
+                  <td>
+                    <div className="company-cell">
+                      <div className="company-logo-wrapper">
+                        <BrandLogo
+                          name={vaga.empresa}
+                          size={32}
+                        />
+                      </div>
+
+                      <span>{vaga.empresa}</span>
+                    </div>
+                  </td>
+
+                  <td>
+                    {vaga.link ? (
+                      <a
+                        href={vaga.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="job-link"
+                      >
+                        {vaga.vaga}
+                      </a>
+                    ) : (
+                      vaga.vaga
+                    )}
+                  </td>
+
+                  <td>
+                    {formatarData(vaga.data_candidatura)}
+                  </td>
+
+                  <td>
+                    <div className="platform-cell">
+                      <BrandLogo
+                        name={vaga.plataforma}
+                        size={22}
+                      />
+
+                      <span>{vaga.plataforma}</span>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span
+                      className={`status-badge status-${gerarClasseStatus(
+                        vaga.status
+                      )}`}
+                    >
+                      <span className="status-dot" />
+                      {vaga.status}
+                    </span>
+                  </td>
+
+                  <td>{vaga.proxima_etapa || '-'}</td>
+
+                  <td>
+                    <div className="actions">
+                      <button
+                        type="button"
+                        className="edit-button"
+                        title="Editar vaga"
+                        onClick={() => onEdit(vaga)}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 20h9" />
+                          <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="delete-button"
+                        title="Excluir vaga"
+                        onClick={() => onDelete(vaga.id)}
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M3 6h18" />
+                          <path d="M8 6V4h8v2" />
+                          <path d="M19 6l-1 14H6L5 6" />
+                          <path d="M10 11v5" />
+                          <path d="M14 11v5" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {!carregando && (
+        <div className="table-footer">
+          <div className="table-count">
+            {totalFiltrado === totalVagas ? (
+              <>
+                Mostrando {inicio}–{fim} de {totalVagas}{' '}
+                vagas
+              </>
+            ) : (
+              <>
+                Mostrando {inicio}–{fim} de{' '}
+                {totalFiltrado} vagas filtradas
+              </>
+            )}
+          </div>
+
+          {totalPaginas > 1 && (
+            <div className="pagination">
+              <button
+                type="button"
+                className="pagination-arrow"
+                onClick={() =>
+                  onPaginaChange(paginaAtual - 1)
+                }
+                disabled={paginaAtual === 1}
+                aria-label="Página anterior"
+              >
+                ‹
+              </button>
+
+              {Array.from(
+                { length: totalPaginas },
+                (_, index) => index + 1
+              ).map((pagina) => (
+                <button
+                  type="button"
+                  key={pagina}
+                  className={`pagination-button ${
+                    pagina === paginaAtual
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() =>
+                    onPaginaChange(pagina)
+                  }
+                >
+                  {pagina}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                className="pagination-arrow"
+                onClick={() =>
+                  onPaginaChange(paginaAtual + 1)
+                }
+                disabled={paginaAtual === totalPaginas}
+                aria-label="Próxima página"
+              >
+                ›
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </section>
   )
 }

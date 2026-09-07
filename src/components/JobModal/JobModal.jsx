@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './JobModal.css'
 
 const statusOptions = [
@@ -31,9 +31,37 @@ const formularioInicial = {
   proximaEtapa: '',
 }
 
-function JobModal({ isOpen, onClose, onSave }) {
+function JobModal({
+  isOpen,
+  onClose,
+  onSave,
+  vagaEditando,
+}) {
   const [formulario, setFormulario] = useState(formularioInicial)
   const [dropdownAberto, setDropdownAberto] = useState(null)
+  const [salvando, setSalvando] = useState(false)
+
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    if (vagaEditando) {
+      setFormulario({
+        empresa: vagaEditando.empresa || '',
+        vaga: vagaEditando.vaga || '',
+        plataforma: vagaEditando.plataforma || '',
+        data: vagaEditando.data_candidatura || '',
+        link: vagaEditando.link || '',
+        status: vagaEditando.status || 'Candidatado',
+        proximaEtapa: vagaEditando.proxima_etapa || '',
+      })
+    } else {
+      setFormulario(formularioInicial)
+    }
+
+    setDropdownAberto(null)
+  }, [isOpen, vagaEditando])
 
   if (!isOpen) {
     return null
@@ -42,15 +70,15 @@ function JobModal({ isOpen, onClose, onSave }) {
   function atualizarCampo(event) {
     const { name, value } = event.target
 
-    setFormulario((dadosAtuais) => ({
-      ...dadosAtuais,
+    setFormulario((formAtual) => ({
+      ...formAtual,
       [name]: value,
     }))
   }
 
   function selecionarPlataforma(plataforma) {
-    setFormulario((dadosAtuais) => ({
-      ...dadosAtuais,
+    setFormulario((formAtual) => ({
+      ...formAtual,
       plataforma,
     }))
 
@@ -58,25 +86,24 @@ function JobModal({ isOpen, onClose, onSave }) {
   }
 
   function selecionarStatus(status) {
-    setFormulario((dadosAtuais) => ({
-      ...dadosAtuais,
+    setFormulario((formAtual) => ({
+      ...formAtual,
       status,
     }))
 
     setDropdownAberto(null)
   }
 
-  function limparFormulario() {
-    setFormulario(formularioInicial)
-    setDropdownAberto(null)
-  }
+  function fechar() {
+    if (salvando) {
+      return
+    }
 
-  function fecharModal() {
-    limparFormulario()
+    setDropdownAberto(null)
     onClose()
   }
 
-  function salvarVaga(event) {
+  async function salvar(event) {
     event.preventDefault()
 
     if (
@@ -85,43 +112,64 @@ function JobModal({ isOpen, onClose, onSave }) {
       !formulario.plataforma ||
       !formulario.data
     ) {
+      alert('Preencha Empresa, Vaga, Plataforma e Data.')
       return
     }
 
-    onSave({
-      ...formulario,
+    setSalvando(true)
+
+    const salvou = await onSave({
       empresa: formulario.empresa.trim(),
       vaga: formulario.vaga.trim(),
+      plataforma: formulario.plataforma,
+      data: formulario.data,
       link: formulario.link.trim(),
+      status: formulario.status,
       proximaEtapa: formulario.proximaEtapa.trim(),
     })
 
-    limparFormulario()
+    setSalvando(false)
+
+    if (salvou) {
+      setFormulario(formularioInicial)
+      setDropdownAberto(null)
+    }
   }
 
   return (
-    <div className="modal-overlay" onMouseDown={fecharModal}>
+    <div
+      className="modal-overlay"
+      onMouseDown={fechar}
+    >
       <div
         className="job-modal"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="modal-header">
           <div>
-            <h2>Nova vaga</h2>
-            <p>Adicione uma nova candidatura ao seu controle.</p>
+            <h2>
+              {vagaEditando ? 'Editar vaga' : 'Nova vaga'}
+            </h2>
+
+            <p>
+              {vagaEditando
+                ? 'Atualize as informações da candidatura.'
+                : 'Adicione uma nova candidatura ao seu controle.'}
+            </p>
           </div>
 
           <button
             type="button"
             className="modal-close"
-            onClick={fecharModal}
+            onClick={fechar}
             aria-label="Fechar"
+            disabled={salvando}
           >
             ×
           </button>
         </div>
 
-        <form className="job-form" onSubmit={salvarVaga}>
+        <form className="job-form" onSubmit={salvar}>
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="empresa">Empresa</label>
@@ -134,7 +182,7 @@ function JobModal({ isOpen, onClose, onSave }) {
                 value={formulario.empresa}
                 onChange={atualizarCampo}
                 autoComplete="off"
-                required
+                disabled={salvando}
               />
             </div>
 
@@ -149,7 +197,7 @@ function JobModal({ isOpen, onClose, onSave }) {
                 value={formulario.vaga}
                 onChange={atualizarCampo}
                 autoComplete="off"
-                required
+                disabled={salvando}
               />
             </div>
           </div>
@@ -169,6 +217,7 @@ function JobModal({ isOpen, onClose, onSave }) {
                         : 'plataforma'
                     )
                   }
+                  disabled={salvando}
                 >
                   <span
                     className={
@@ -205,7 +254,9 @@ function JobModal({ isOpen, onClose, onSave }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="data">Data da candidatura</label>
+              <label htmlFor="data">
+                Data da candidatura
+              </label>
 
               <input
                 id="data"
@@ -213,7 +264,7 @@ function JobModal({ isOpen, onClose, onSave }) {
                 type="date"
                 value={formulario.data}
                 onChange={atualizarCampo}
-                required
+                disabled={salvando}
               />
             </div>
           </div>
@@ -221,7 +272,9 @@ function JobModal({ isOpen, onClose, onSave }) {
           <div className="form-group">
             <label htmlFor="link">
               Link da vaga
-              <span className="optional-label">Opcional</span>
+              <span className="optional-label">
+                Opcional
+              </span>
             </label>
 
             <input
@@ -232,6 +285,7 @@ function JobModal({ isOpen, onClose, onSave }) {
               value={formulario.link}
               onChange={atualizarCampo}
               autoComplete="off"
+              disabled={salvando}
             />
           </div>
 
@@ -249,6 +303,7 @@ function JobModal({ isOpen, onClose, onSave }) {
                       : 'status'
                   )
                 }
+                disabled={salvando}
               >
                 <span>{formulario.status}</span>
                 <span className="custom-select-arrow">⌄</span>
@@ -278,7 +333,9 @@ function JobModal({ isOpen, onClose, onSave }) {
           <div className="form-group">
             <label htmlFor="proximaEtapa">
               Próxima etapa
-              <span className="optional-label">Opcional</span>
+              <span className="optional-label">
+                Opcional
+              </span>
             </label>
 
             <input
@@ -289,6 +346,7 @@ function JobModal({ isOpen, onClose, onSave }) {
               value={formulario.proximaEtapa}
               onChange={atualizarCampo}
               autoComplete="off"
+              disabled={salvando}
             />
           </div>
 
@@ -296,13 +354,22 @@ function JobModal({ isOpen, onClose, onSave }) {
             <button
               type="button"
               className="cancel-button"
-              onClick={fecharModal}
+              onClick={fechar}
+              disabled={salvando}
             >
               Cancelar
             </button>
 
-            <button type="submit" className="save-button">
-              Salvar vaga
+            <button
+              type="submit"
+              className="save-button"
+              disabled={salvando}
+            >
+              {salvando
+                ? 'Salvando...'
+                : vagaEditando
+                  ? 'Salvar alterações'
+                  : 'Salvar vaga'}
             </button>
           </div>
         </form>

@@ -1,17 +1,6 @@
 import { useState } from 'react'
 import './Filters.css'
 
-const empresas = [
-  'Wabtec',
-  'SolvePlan',
-  'Grupo Zelo',
-  'Stellantis',
-  'Ambev',
-  'Itaú',
-  'Accenture',
-  'Stone',
-]
-
 const status = [
   'Candidatado',
   'Entrevista RH',
@@ -23,10 +12,16 @@ const status = [
   'Reprovado',
 ]
 
-function Filters() {
-  const [empresasSelecionadas, setEmpresasSelecionadas] = useState([])
-  const [statusSelecionados, setStatusSelecionados] = useState([])
-
+function Filters({
+  empresas,
+  busca,
+  onBuscaChange,
+  empresasSelecionadas,
+  onEmpresasChange,
+  statusSelecionados,
+  onStatusChange,
+  onClearFilters,
+}) {
   const [filtroAberto, setFiltroAberto] = useState(null)
   const [buscaEmpresa, setBuscaEmpresa] = useState('')
 
@@ -34,20 +29,37 @@ function Filters() {
     empresa.toLowerCase().includes(buscaEmpresa.toLowerCase())
   )
 
+  const possuiFiltros =
+    busca.trim() ||
+    empresasSelecionadas.length > 0 ||
+    statusSelecionados.length > 0
+
   function alternarEmpresa(empresa) {
-    setEmpresasSelecionadas((selecionadas) =>
-      selecionadas.includes(empresa)
-        ? selecionadas.filter((item) => item !== empresa)
-        : [...selecionadas, empresa]
-    )
+    if (empresasSelecionadas.includes(empresa)) {
+      onEmpresasChange(
+        empresasSelecionadas.filter((item) => item !== empresa)
+      )
+    } else {
+      onEmpresasChange([
+        ...empresasSelecionadas,
+        empresa,
+      ])
+    }
   }
 
   function alternarStatus(itemStatus) {
-    setStatusSelecionados((selecionados) =>
-      selecionados.includes(itemStatus)
-        ? selecionados.filter((item) => item !== itemStatus)
-        : [...selecionados, itemStatus]
-    )
+    if (statusSelecionados.includes(itemStatus)) {
+      onStatusChange(
+        statusSelecionados.filter(
+          (item) => item !== itemStatus
+        )
+      )
+    } else {
+      onStatusChange([
+        ...statusSelecionados,
+        itemStatus,
+      ])
+    }
   }
 
   function textoEmpresas() {
@@ -59,7 +71,7 @@ function Filters() {
       return empresasSelecionadas[0]
     }
 
-    return `${empresasSelecionadas.length} empresas selecionadas`
+    return `${empresasSelecionadas.length} empresas`
   }
 
   function textoStatus() {
@@ -71,23 +83,35 @@ function Filters() {
       return statusSelecionados[0]
     }
 
-    return `${statusSelecionados.length} status selecionados`
+    return `${statusSelecionados.length} status`
   }
 
   return (
     <section className="filters">
-      {/* Busca geral */}
-
       <div className="search-box">
-        <span className="search-icon">⌕</span>
+        <svg
+          viewBox="0 0 24 24"
+          width="17"
+          height="17"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
 
         <input
           type="text"
           placeholder="Buscar empresa ou vaga..."
+          value={busca}
+          onChange={(event) =>
+            onBuscaChange(event.target.value)
+          }
         />
       </div>
-
-      {/* Empresas */}
 
       <div className="filter-container">
         <button
@@ -95,11 +119,32 @@ function Filters() {
           className="filter-button"
           onClick={() =>
             setFiltroAberto(
-              filtroAberto === 'empresa' ? null : 'empresa'
+              filtroAberto === 'empresa'
+                ? null
+                : 'empresa'
             )
           }
         >
-          <span>{textoEmpresas()}</span>
+          <div className="filter-button-content">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M3 21h18" />
+              <path d="M6 21V5h12v16" />
+              <path d="M9 9h2" />
+              <path d="M13 9h2" />
+              <path d="M9 13h2" />
+              <path d="M13 13h2" />
+            </svg>
+
+            <span>{textoEmpresas()}</span>
+          </div>
+
           <span className="filter-arrow">⌄</span>
         </button>
 
@@ -110,41 +155,41 @@ function Filters() {
                 type="text"
                 placeholder="Buscar empresa..."
                 value={buscaEmpresa}
-                onChange={(e) => setBuscaEmpresa(e.target.value)}
+                onChange={(event) =>
+                  setBuscaEmpresa(event.target.value)
+                }
               />
             </div>
 
             <div className="filter-options">
-              {empresasFiltradas.map((empresa) => (
-                <label
-                  className="filter-option"
-                  key={empresa}
-                >
-                  <input
-                    type="checkbox"
-                    checked={empresasSelecionadas.includes(empresa)}
-                    onChange={() => alternarEmpresa(empresa)}
-                  />
+              {empresasFiltradas.length === 0 ? (
+                <div className="filter-option">
+                  Nenhuma empresa encontrada
+                </div>
+              ) : (
+                empresasFiltradas.map((empresa) => (
+                  <label
+                    className="filter-option"
+                    key={empresa}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={empresasSelecionadas.includes(
+                        empresa
+                      )}
+                      onChange={() =>
+                        alternarEmpresa(empresa)
+                      }
+                    />
 
-                  <span>{empresa}</span>
-                </label>
-              ))}
+                    <span>{empresa}</span>
+                  </label>
+                ))
+              )}
             </div>
-
-            {empresasSelecionadas.length > 0 && (
-              <button
-                type="button"
-                className="clear-filter"
-                onClick={() => setEmpresasSelecionadas([])}
-              >
-                Limpar seleção
-              </button>
-            )}
           </div>
         )}
       </div>
-
-      {/* Status */}
 
       <div className="filter-container">
         <button
@@ -152,11 +197,30 @@ function Filters() {
           className="filter-button"
           onClick={() =>
             setFiltroAberto(
-              filtroAberto === 'status' ? null : 'status'
+              filtroAberto === 'status'
+                ? null
+                : 'status'
             )
           }
         >
-          <span>{textoStatus()}</span>
+          <div className="filter-button-content">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20.59 13.41 11 3.83V3H4v7h.83l9.58 9.59a2 2 0 0 0 2.82 0l3.36-3.36a2 2 0 0 0 0-2.82Z" />
+              <circle cx="7.5" cy="6.5" r="1" />
+            </svg>
+
+            <span>{textoStatus()}</span>
+          </div>
+
           <span className="filter-arrow">⌄</span>
         </button>
 
@@ -170,27 +234,30 @@ function Filters() {
                 >
                   <input
                     type="checkbox"
-                    checked={statusSelecionados.includes(itemStatus)}
-                    onChange={() => alternarStatus(itemStatus)}
+                    checked={statusSelecionados.includes(
+                      itemStatus
+                    )}
+                    onChange={() =>
+                      alternarStatus(itemStatus)
+                    }
                   />
 
                   <span>{itemStatus}</span>
                 </label>
               ))}
             </div>
-
-            {statusSelecionados.length > 0 && (
-              <button
-                type="button"
-                className="clear-filter"
-                onClick={() => setStatusSelecionados([])}
-              >
-                Limpar seleção
-              </button>
-            )}
           </div>
         )}
       </div>
+
+      <button
+        type="button"
+        className="clear-all-button"
+        onClick={onClearFilters}
+        disabled={!possuiFiltros}
+      >
+        Limpar filtros
+      </button>
     </section>
   )
 }
