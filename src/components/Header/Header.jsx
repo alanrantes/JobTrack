@@ -14,15 +14,9 @@ function Header({ onNewJob }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
-            <rect
-              x="3"
-              y="7"
-              width="18"
-              height="13"
-              rx="2"
-            />
-
+            <rect x="3" y="7" width="18" height="13" rx="2" />
             <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             <path d="M3 12h18" />
           </svg>
@@ -30,9 +24,7 @@ function Header({ onNewJob }) {
 
         <div className="brand-text">
           <h1>Minhas Vagas</h1>
-          <p>
-            Controle simples dos seus processos seletivos.
-          </p>
+          <p>Controle simples dos seus processos seletivos.</p>
         </div>
       </div>
 
@@ -41,7 +33,7 @@ function Header({ onNewJob }) {
         className="new-job-button"
         onClick={onNewJob}
       >
-        <span>+</span>
+        <span aria-hidden="true">+</span>
         Nova vaga
       </button>
     </header>

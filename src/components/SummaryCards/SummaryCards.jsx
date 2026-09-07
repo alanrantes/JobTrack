@@ -1,150 +1,129 @@
 import './SummaryCards.css'
 
+function Icon({ children }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="21"
+      height="21"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  )
+}
+
 function SummaryCards({ vagas }) {
-  const total = vagas.length
+  const resumo = vagas.reduce(
+    (dados, vaga) => {
+      dados.candidaturas++
 
-  const entrevistas = vagas.filter(
-    (vaga) =>
-      vaga.status === 'Entrevista RH' ||
-      vaga.status === 'Entrevista Gestor'
-  ).length
+      if (
+        vaga.status === 'Entrevista RH' ||
+        vaga.status === 'Entrevista Gestor'
+      ) {
+        dados.entrevistas++
+      }
 
-  const emAndamento = vagas.filter(
-    (vaga) =>
-      vaga.status !== 'Aprovado' &&
-      vaga.status !== 'Reprovado'
-  ).length
+      if (vaga.status === 'Aprovado') {
+        dados.aprovadas++
+      } else if (vaga.status === 'Reprovado') {
+        dados.reprovacoes++
+      } else {
+        dados.emAndamento++
+      }
 
-  const aprovadas = vagas.filter(
-    (vaga) => vaga.status === 'Aprovado'
-  ).length
-
-  const reprovacoes = vagas.filter(
-    (vaga) => vaga.status === 'Reprovado'
-  ).length
+      return dados
+    },
+    {
+      candidaturas: 0,
+      entrevistas: 0,
+      emAndamento: 0,
+      aprovadas: 0,
+      reprovacoes: 0,
+    }
+  )
 
   const cards = [
     {
       titulo: 'candidaturas',
-      valor: total,
+      valor: resumo.candidaturas,
       tipo: 'blue',
       icone: (
-        <svg
-          viewBox="0 0 24 24"
-          width="21"
-          height="21"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+        <Icon>
           <path d="M6 2h9l5 5v15H6z" />
           <path d="M14 2v6h6" />
           <path d="M9 13h6" />
           <path d="M9 17h6" />
-        </svg>
+        </Icon>
       ),
     },
     {
       titulo: 'entrevistas',
-      valor: entrevistas,
+      valor: resumo.entrevistas,
       tipo: 'purple',
       icone: (
-        <svg
-          viewBox="0 0 24 24"
-          width="21"
-          height="21"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+        <Icon>
           <circle cx="9" cy="7" r="4" />
           <path d="M2 21v-2a6 6 0 0 1 6-6h2" />
           <circle cx="17" cy="11" r="3" />
           <path d="M13 21v-1a4 4 0 0 1 8 0v1" />
-        </svg>
+        </Icon>
       ),
     },
     {
       titulo: 'em andamento',
-      valor: emAndamento,
+      valor: resumo.emAndamento,
       tipo: 'yellow',
       icone: (
-        <svg
-          viewBox="0 0 24 24"
-          width="21"
-          height="21"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+        <Icon>
           <circle cx="12" cy="12" r="9" />
           <path d="M12 7v5l3 2" />
-        </svg>
+        </Icon>
       ),
     },
     {
       titulo: 'aprovadas',
-      valor: aprovadas,
+      valor: resumo.aprovadas,
       tipo: 'green',
       icone: (
-        <svg
-          viewBox="0 0 24 24"
-          width="21"
-          height="21"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+        <Icon>
           <circle cx="12" cy="12" r="9" />
           <path d="m8 12 2.5 2.5L16 9" />
-        </svg>
+        </Icon>
       ),
     },
     {
       titulo: 'reprovações',
-      valor: reprovacoes,
+      valor: resumo.reprovacoes,
       tipo: 'red',
       icone: (
-        <svg
-          viewBox="0 0 24 24"
-          width="21"
-          height="21"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+        <Icon>
           <circle cx="12" cy="12" r="9" />
           <path d="m9 9 6 6" />
           <path d="m15 9-6 6" />
-        </svg>
+        </Icon>
       ),
     },
   ]
 
   return (
     <section className="summary-cards">
-      {cards.map((card) => (
+      {cards.map(({ titulo, valor, tipo, icone }) => (
         <div
-          key={card.titulo}
-          className={`summary-card summary-card-${card.tipo}`}
+          key={titulo}
+          className={`summary-card summary-card-${tipo}`}
         >
-          <div className="summary-card-icon">
-            {card.icone}
-          </div>
+          <div className="summary-card-icon">{icone}</div>
 
           <div className="summary-card-content">
-            <strong>{card.valor}</strong>
-            <span>{card.titulo}</span>
+            <strong>{valor}</strong>
+            <span>{titulo}</span>
           </div>
         </div>
       ))}

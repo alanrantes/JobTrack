@@ -12,17 +12,16 @@
 }
 
 .brand-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   width: 42px;
   height: 42px;
   flex-shrink: 0;
-  color: #111827;
+  color: var(--color-text-strong);
 }
 
 .brand-text h1 {
-  color: #111827;
+  color: var(--color-text-strong);
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.4px;
@@ -30,7 +29,7 @@
 
 .brand-text p {
   margin-top: 3px;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 13px;
 }
 
@@ -40,22 +39,21 @@
   gap: 7px;
   height: 42px;
   padding: 0 17px;
-  background-color: #2563eb;
-  border: none;
-  border-radius: 8px;
-  color: #ffffff;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-surface);
   font-size: 13px;
   font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.18);
+  box-shadow: var(--shadow-sm);
   transition:
-    background-color 0.15s ease,
-    box-shadow 0.15s ease;
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .new-job-button:hover {
-  background-color: #1d4ed8;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+  background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
 }
 
 .new-job-button span {
@@ -74,6 +72,6 @@
   }
 
   .new-job-button {
-    padding: 0 13px;
+    padding-inline: 13px;
   }
 }

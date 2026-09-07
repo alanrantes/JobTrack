@@ -2,9 +2,9 @@
   width: 100%;
   margin-top: 18px;
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
 .table-scroll {
@@ -18,77 +18,80 @@
   border-collapse: collapse;
 }
 
-.jobs-table thead {
-  background-color: #f8fafc;
+.jobs-table thead,
+.jobs-table tbody tr:hover,
+.actions button:hover,
+.pagination-button:hover,
+.pagination-arrow:hover:not(:disabled) {
+  background: var(--color-surface-soft);
 }
 
 .jobs-table th {
   padding: 12px 16px;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 12px;
   font-weight: 600;
   text-align: left;
   white-space: nowrap;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .jobs-table td {
   padding: 12px 16px;
-  color: #334155;
+  color: var(--color-text);
   font-size: 13px;
   vertical-align: middle;
   border-bottom: 1px solid #eef2f7;
 }
 
 .jobs-table tbody tr {
-  transition: background-color 0.15s ease;
-}
-
-.jobs-table tbody tr:hover {
-  background-color: #f8fafc;
+  transition: background var(--transition-fast);
 }
 
 .jobs-table tbody tr:last-child td {
-  border-bottom: none;
+  border-bottom: 0;
+}
+
+.company-cell,
+.platform-cell,
+.actions,
+.pagination {
+  display: flex;
+  align-items: center;
 }
 
 .company-cell {
-  display: flex;
-  align-items: center;
   gap: 10px;
   min-width: 150px;
-  color: #111827;
+  color: var(--color-text-strong);
   font-weight: 600;
 }
 
 .company-logo-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   width: 34px;
   height: 34px;
   flex-shrink: 0;
   overflow: hidden;
-  background-color: #ffffff;
+  background: var(--color-surface);
   border: 1px solid #edf1f5;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
 }
 
 .platform-cell {
-  display: flex;
-  align-items: center;
   gap: 8px;
   white-space: nowrap;
 }
 
 .job-link {
-  color: #334155;
+  color: var(--color-text);
   font-weight: 500;
   text-decoration: none;
 }
 
 .job-link:hover {
-  color: #2563eb;
+  color: var(--color-primary);
   text-decoration: underline;
 }
 
@@ -97,7 +100,7 @@
   align-items: center;
   gap: 7px;
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
@@ -108,80 +111,72 @@
   height: 6px;
   flex-shrink: 0;
   border-radius: 50%;
-  background-color: currentColor;
+  background: currentColor;
 }
 
 .status-candidatado {
-  background-color: #eff6ff;
-  color: #2563eb;
+  background: #eff6ff;
+  color: var(--color-primary);
 }
 
 .status-entrevista-rh,
-.status-entrevista-gestor {
-  background-color: #f5f3ff;
-  color: #7c3aed;
+.status-entrevista-gestor,
+.status-teste-tecnico {
+  background: #f5f3ff;
+  color: var(--color-purple);
 }
 
 .status-aguardando-retorno-rh,
 .status-aguardando-retorno-gestor {
-  background-color: #fffbeb;
+  background: #fffbeb;
   color: #b45309;
 }
 
-.status-teste-tecnico {
-  background-color: #f5f3ff;
-  color: #7c3aed;
-}
-
 .status-aprovado {
-  background-color: #ecfdf5;
-  color: #059669;
+  background: #ecfdf5;
+  color: var(--color-success);
 }
 
 .status-reprovado {
-  background-color: #fef2f2;
-  color: #dc2626;
+  background: #fef2f2;
+  color: var(--color-danger);
 }
 
 .actions {
-  display: flex;
-  align-items: center;
   gap: 6px;
 }
 
 .actions button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   width: 32px;
   height: 32px;
   padding: 0;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.edit-button,
-.delete-button {
-  color: #64748b;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .edit-button:hover {
-  color: #2563eb;
-  background-color: #eff6ff;
-  border-color: #bfdbfe;
+  color: var(--color-primary) !important;
+  background: #eff6ff !important;
+  border-color: #bfdbfe !important;
 }
 
 .delete-button:hover {
-  color: #dc2626;
-  background-color: #fef2f2;
-  border-color: #fecaca;
+  color: var(--color-danger) !important;
+  background: #fef2f2 !important;
+  border-color: #fecaca !important;
 }
 
 .table-message {
   padding: 36px !important;
-  color: #94a3b8 !important;
+  color: var(--color-text-light) !important;
   text-align: center;
 }
 
@@ -191,47 +186,46 @@
   justify-content: space-between;
   min-height: 52px;
   padding: 10px 16px;
-  background-color: #ffffff;
+  background: var(--color-surface);
   border-top: 1px solid #eef2f7;
 }
 
 .table-count {
-  color: #94a3b8;
+  color: var(--color-text-light);
   font-size: 12px;
 }
 
 .pagination {
-  display: flex;
-  align-items: center;
   gap: 5px;
 }
 
 .pagination-button,
 .pagination-arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   min-width: 30px;
   height: 30px;
   padding: 0 8px;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  color: #64748b;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
   font-size: 12px;
-  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .pagination-button:hover,
 .pagination-arrow:hover:not(:disabled) {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
+  border-color: var(--color-border-strong);
 }
 
 .pagination-button.active {
-  background-color: #2563eb;
-  border-color: #2563eb;
-  color: #ffffff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-surface);
 }
 
 .pagination-arrow {
@@ -240,7 +234,6 @@
 
 .pagination-arrow:disabled {
   opacity: 0.35;
-  cursor: default;
 }
 
 .jobs-table th:nth-child(1) {

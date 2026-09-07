@@ -11,11 +11,24 @@ import { supabase } from './lib/supabase'
 
 const VAGAS_POR_PAGINA = 8
 
+function prepararVagaParaBanco(vaga) {
+  return {
+    empresa: vaga.empresa,
+    vaga: vaga.vaga,
+    plataforma: vaga.plataforma,
+    data_candidatura: vaga.data,
+    link: vaga.link || null,
+    status: vaga.status,
+    proxima_etapa: vaga.proximaEtapa || null,
+  }
+}
+
 function App() {
-  const [modalAberto, setModalAberto] = useState(false)
-  const [vagaEditando, setVagaEditando] = useState(null)
   const [vagas, setVagas] = useState([])
   const [carregando, setCarregando] = useState(true)
+
+  const [modalAberto, setModalAberto] = useState(false)
+  const [vagaEditando, setVagaEditando] = useState(null)
 
   const [busca, setBusca] = useState('')
   const [empresasSelecionadas, setEmpresasSelecionadas] = useState([])
@@ -24,32 +37,32 @@ function App() {
   const [paginaAtual, setPaginaAtual] = useState(1)
 
   useEffect(() => {
-    buscarVagas()
-  }, [])
+    async function carregarVagas() {
+      const { data, error } = await supabase
+        .from('vagas')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-  async function buscarVagas() {
-    setCarregando(true)
+      if (error) {
+        console.error('Erro ao buscar vagas:', error)
+        setCarregando(false)
+        return
+      }
 
-    const { data, error } = await supabase
-      .from('vagas')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Erro ao buscar vagas:', error)
+      setVagas(data ?? [])
       setCarregando(false)
-      return
     }
 
-    setVagas(data || [])
-    setCarregando(false)
-  }
+    carregarVagas()
+  }, [])
 
-  const empresas = useMemo(() => {
-    return [...new Set(vagas.map((vaga) => vaga.empresa))]
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b))
-  }, [vagas])
+  const empresas = useMemo(
+    () =>
+      [...new Set(vagas.map(({ empresa }) => empresa))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b)),
+    [vagas]
+  )
 
   const vagasFiltradas = useMemo(() => {
     const termo = busca.trim().toLowerCase()
@@ -61,11 +74,11 @@ function App() {
         vaga.vaga.toLowerCase().includes(termo)
 
       const correspondeEmpresa =
-        empresasSelecionadas.length === 0 ||
+        !empresasSelecionadas.length ||
         empresasSelecionadas.includes(vaga.empresa)
 
       const correspondeStatus =
-        statusSelecionados.length === 0 ||
+        !statusSelecionados.length ||
         statusSelecionados.includes(vaga.status)
 
       return (
@@ -74,12 +87,7 @@ function App() {
         correspondeStatus
       )
     })
-  }, [
-    vagas,
-    busca,
-    empresasSelecionadas,
-    statusSelecionados,
-  ])
+  }, [vagas, busca, empresasSelecionadas, statusSelecionados])
 
   const totalPaginas = Math.max(
     1,
@@ -88,9 +96,11 @@ function App() {
 
   const vagasPaginadas = useMemo(() => {
     const inicio = (paginaAtual - 1) * VAGAS_POR_PAGINA
-    const fim = inicio + VAGAS_POR_PAGINA
 
-    return vagasFiltradas.slice(inicio, fim)
+    return vagasFiltradas.slice(
+      inicio,
+      inicio + VAGAS_POR_PAGINA
+    )
   }, [vagasFiltradas, paginaAtual])
 
   useEffect(() => {
@@ -103,12 +113,12 @@ function App() {
     }
   }, [paginaAtual, totalPaginas])
 
-  function abrirModalNovaVaga() {
+  function abrirNovaVaga() {
     setVagaEditando(null)
     setModalAberto(true)
   }
 
-  function abrirModalEdicao(vaga) {
+  function abrirEdicao(vaga) {
     setVagaEditando(vaga)
     setModalAberto(true)
   }
@@ -122,90 +132,53 @@ function App() {
     setBusca('')
     setEmpresasSelecionadas([])
     setStatusSelecionados([])
-    setPaginaAtual(1)
   }
 
-  async function salvarVaga(dadosVaga) {
+  async function salvarVaga(vaga) {
+    const dados = prepararVagaParaBanco(vaga)
+
     if (vagaEditando) {
-      return atualizarVaga(vagaEditando.id, dadosVaga)
-    }
+      const { data, error } = await supabase
+        .from('vagas')
+        .update(dados)
+        .eq('id', vagaEditando.id)
+        .select()
+        .single()
 
-    return adicionarVaga(dadosVaga)
-  }
+      if (error) {
+        console.error('Erro ao atualizar vaga:', error)
+        alert('Não foi possível atualizar a vaga.')
+        return false
+      }
 
-  async function adicionarVaga(novaVaga) {
-    const { data, error } = await supabase
-      .from('vagas')
-      .insert([
-        {
-          empresa: novaVaga.empresa,
-          vaga: novaVaga.vaga,
-          plataforma: novaVaga.plataforma,
-          data_candidatura: novaVaga.data,
-          link: novaVaga.link || null,
-          status: novaVaga.status,
-          proxima_etapa: novaVaga.proximaEtapa || null,
-        },
-      ])
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Erro ao salvar vaga:', error)
-      alert('Não foi possível salvar a vaga.')
-      return false
-    }
-
-    setVagas((vagasAtuais) => [
-      data,
-      ...vagasAtuais,
-    ])
-
-    setPaginaAtual(1)
-    fecharModal()
-
-    return true
-  }
-
-  async function atualizarVaga(id, vagaAtualizada) {
-    const { data, error } = await supabase
-      .from('vagas')
-      .update({
-        empresa: vagaAtualizada.empresa,
-        vaga: vagaAtualizada.vaga,
-        plataforma: vagaAtualizada.plataforma,
-        data_candidatura: vagaAtualizada.data,
-        link: vagaAtualizada.link || null,
-        status: vagaAtualizada.status,
-        proxima_etapa: vagaAtualizada.proximaEtapa || null,
-      })
-      .eq('id', id)
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Erro ao atualizar vaga:', error)
-      alert('Não foi possível atualizar a vaga.')
-      return false
-    }
-
-    setVagas((vagasAtuais) =>
-      vagasAtuais.map((vaga) =>
-        vaga.id === id ? data : vaga
+      setVagas((atuais) =>
+        atuais.map((item) =>
+          item.id === vagaEditando.id ? data : item
+        )
       )
-    )
+    } else {
+      const { data, error } = await supabase
+        .from('vagas')
+        .insert(dados)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Erro ao salvar vaga:', error)
+        alert('Não foi possível salvar a vaga.')
+        return false
+      }
+
+      setVagas((atuais) => [data, ...atuais])
+      setPaginaAtual(1)
+    }
 
     fecharModal()
-
     return true
   }
 
   async function excluirVaga(id) {
-    const confirmou = window.confirm(
-      'Tem certeza que deseja excluir esta vaga?'
-    )
-
-    if (!confirmou) {
+    if (!window.confirm('Tem certeza que deseja excluir esta vaga?')) {
       return
     }
 
@@ -220,14 +193,14 @@ function App() {
       return
     }
 
-    setVagas((vagasAtuais) =>
-      vagasAtuais.filter((vaga) => vaga.id !== id)
+    setVagas((atuais) =>
+      atuais.filter((vaga) => vaga.id !== id)
     )
   }
 
   return (
     <main className="app">
-      <Header onNewJob={abrirModalNovaVaga} />
+      <Header onNewJob={abrirNovaVaga} />
 
       <SummaryCards vagas={vagas} />
 
@@ -245,7 +218,7 @@ function App() {
       <JobsTable
         vagas={vagasPaginadas}
         carregando={carregando}
-        onEdit={abrirModalEdicao}
+        onEdit={abrirEdicao}
         onDelete={excluirVaga}
         paginaAtual={paginaAtual}
         totalPaginas={totalPaginas}

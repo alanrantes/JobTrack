@@ -7,24 +7,22 @@ function BrandLogo({
 }) {
   const logoDevKey = import.meta.env.VITE_LOGO_DEV_KEY
 
-  if (!name || !logoDevKey) {
-    return null
-  }
+  if (!name || !logoDevKey) return null
 
-  const encodedName = encodeURIComponent(name)
+  const logoUrl = new URL(
+    `https://img.logo.dev/name/${encodeURIComponent(name)}`
+  )
 
-  const logoUrl =
-    `https://img.logo.dev/name/${encodedName}` +
-    `?token=${logoDevKey}` +
-    `&size=${size * 2}` +
-    `&format=png` +
-    `&retina=true` +
-    `&fallback=monogram`
+  logoUrl.searchParams.set('token', logoDevKey)
+  logoUrl.searchParams.set('size', size * 2)
+  logoUrl.searchParams.set('format', 'png')
+  logoUrl.searchParams.set('retina', 'true')
+  logoUrl.searchParams.set('fallback', 'monogram')
 
   return (
     <img
-      className={`brand-logo ${className}`}
-      src={logoUrl}
+      className={`brand-logo ${className}`.trim()}
+      src={logoUrl.toString()}
       alt={`Logo ${name}`}
       width={size}
       height={size}

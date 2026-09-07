@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './JobModal.css'
 
-const statusOptions = [
+const STATUS = [
   'Candidatado',
   'Entrevista RH',
   'Aguardando retorno RH',
@@ -12,7 +12,7 @@ const statusOptions = [
   'Reprovado',
 ]
 
-const plataformas = [
+const PLATAFORMAS = [
   'LinkedIn',
   'Gupy',
   'Indeed',
@@ -21,7 +21,7 @@ const plataformas = [
   'Outro',
 ]
 
-const formularioInicial = {
+const FORMULARIO_INICIAL = {
   empresa: '',
   vaga: '',
   plataforma: '',
@@ -31,73 +31,110 @@ const formularioInicial = {
   proximaEtapa: '',
 }
 
+function CustomSelect({
+  value,
+  placeholder,
+  options,
+  aberto,
+  onToggle,
+  onSelect,
+  disabled,
+}) {
+  return (
+    <div className="custom-select">
+      <button
+        type="button"
+        className="custom-select-button"
+        onClick={onToggle}
+        disabled={disabled}
+      >
+        <span className={!value ? 'placeholder' : ''}>
+          {value || placeholder}
+        </span>
+
+        <span className="custom-select-arrow" aria-hidden="true">
+          ⌄
+        </span>
+      </button>
+
+      {aberto && (
+        <div className="custom-select-options">
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className={`custom-select-option ${
+                value === option ? 'selected' : ''
+              }`}
+              onClick={() => onSelect(option)}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function JobModal({
   isOpen,
   onClose,
   onSave,
   vagaEditando,
 }) {
-  const [formulario, setFormulario] = useState(formularioInicial)
+  const [formulario, setFormulario] = useState(FORMULARIO_INICIAL)
   const [dropdownAberto, setDropdownAberto] = useState(null)
   const [salvando, setSalvando] = useState(false)
 
   useEffect(() => {
-    if (!isOpen) {
-      return
-    }
+    if (!isOpen) return
 
-    if (vagaEditando) {
-      setFormulario({
-        empresa: vagaEditando.empresa || '',
-        vaga: vagaEditando.vaga || '',
-        plataforma: vagaEditando.plataforma || '',
-        data: vagaEditando.data_candidatura || '',
-        link: vagaEditando.link || '',
-        status: vagaEditando.status || 'Candidatado',
-        proximaEtapa: vagaEditando.proxima_etapa || '',
-      })
-    } else {
-      setFormulario(formularioInicial)
-    }
+    setFormulario(
+      vagaEditando
+        ? {
+            empresa: vagaEditando.empresa || '',
+            vaga: vagaEditando.vaga || '',
+            plataforma: vagaEditando.plataforma || '',
+            data: vagaEditando.data_candidatura || '',
+            link: vagaEditando.link || '',
+            status: vagaEditando.status || 'Candidatado',
+            proximaEtapa: vagaEditando.proxima_etapa || '',
+          }
+        : FORMULARIO_INICIAL
+    )
 
     setDropdownAberto(null)
   }, [isOpen, vagaEditando])
 
-  if (!isOpen) {
-    return null
-  }
+  if (!isOpen) return null
 
   function atualizarCampo(event) {
     const { name, value } = event.target
 
-    setFormulario((formAtual) => ({
-      ...formAtual,
+    setFormulario((atual) => ({
+      ...atual,
       [name]: value,
     }))
   }
 
-  function selecionarPlataforma(plataforma) {
-    setFormulario((formAtual) => ({
-      ...formAtual,
-      plataforma,
+  function selecionar(campo, value) {
+    setFormulario((atual) => ({
+      ...atual,
+      [campo]: value,
     }))
 
     setDropdownAberto(null)
   }
 
-  function selecionarStatus(status) {
-    setFormulario((formAtual) => ({
-      ...formAtual,
-      status,
-    }))
-
-    setDropdownAberto(null)
+  function alternarDropdown(nome) {
+    setDropdownAberto((atual) =>
+      atual === nome ? null : nome
+    )
   }
 
   function fechar() {
-    if (salvando) {
-      return
-    }
+    if (salvando) return
 
     setDropdownAberto(null)
     onClose()
@@ -106,11 +143,21 @@ function JobModal({
   async function salvar(event) {
     event.preventDefault()
 
+    const {
+      empresa,
+      vaga,
+      plataforma,
+      data,
+      link,
+      status,
+      proximaEtapa,
+    } = formulario
+
     if (
-      !formulario.empresa.trim() ||
-      !formulario.vaga.trim() ||
-      !formulario.plataforma ||
-      !formulario.data
+      !empresa.trim() ||
+      !vaga.trim() ||
+      !plataforma ||
+      !data
     ) {
       alert('Preencha Empresa, Vaga, Plataforma e Data.')
       return
@@ -119,37 +166,32 @@ function JobModal({
     setSalvando(true)
 
     const salvou = await onSave({
-      empresa: formulario.empresa.trim(),
-      vaga: formulario.vaga.trim(),
-      plataforma: formulario.plataforma,
-      data: formulario.data,
-      link: formulario.link.trim(),
-      status: formulario.status,
-      proximaEtapa: formulario.proximaEtapa.trim(),
+      empresa: empresa.trim(),
+      vaga: vaga.trim(),
+      plataforma,
+      data,
+      link: link.trim(),
+      status,
+      proximaEtapa: proximaEtapa.trim(),
     })
 
     setSalvando(false)
 
     if (salvou) {
-      setFormulario(formularioInicial)
+      setFormulario(FORMULARIO_INICIAL)
       setDropdownAberto(null)
     }
   }
 
   return (
-    <div
-      className="modal-overlay"
-      onMouseDown={fechar}
-    >
+    <div className="modal-overlay" onMouseDown={fechar}>
       <div
         className="job-modal"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="modal-header">
           <div>
-            <h2>
-              {vagaEditando ? 'Editar vaga' : 'Nova vaga'}
-            </h2>
+            <h2>{vagaEditando ? 'Editar vaga' : 'Nova vaga'}</h2>
 
             <p>
               {vagaEditando
@@ -206,51 +248,17 @@ function JobModal({
             <div className="form-group">
               <label>Plataforma</label>
 
-              <div className="custom-select">
-                <button
-                  type="button"
-                  className="custom-select-button"
-                  onClick={() =>
-                    setDropdownAberto(
-                      dropdownAberto === 'plataforma'
-                        ? null
-                        : 'plataforma'
-                    )
-                  }
-                  disabled={salvando}
-                >
-                  <span
-                    className={
-                      !formulario.plataforma ? 'placeholder' : ''
-                    }
-                  >
-                    {formulario.plataforma || 'Selecione'}
-                  </span>
-
-                  <span className="custom-select-arrow">⌄</span>
-                </button>
-
-                {dropdownAberto === 'plataforma' && (
-                  <div className="custom-select-options">
-                    {plataformas.map((plataforma) => (
-                      <button
-                        key={plataforma}
-                        type="button"
-                        className={`custom-select-option ${
-                          formulario.plataforma === plataforma
-                            ? 'selected'
-                            : ''
-                        }`}
-                        onClick={() =>
-                          selecionarPlataforma(plataforma)
-                        }
-                      >
-                        {plataforma}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <CustomSelect
+                value={formulario.plataforma}
+                placeholder="Selecione"
+                options={PLATAFORMAS}
+                aberto={dropdownAberto === 'plataforma'}
+                onToggle={() => alternarDropdown('plataforma')}
+                onSelect={(value) =>
+                  selecionar('plataforma', value)
+                }
+                disabled={salvando}
+              />
             </div>
 
             <div className="form-group">
@@ -292,42 +300,14 @@ function JobModal({
           <div className="form-group">
             <label>Status</label>
 
-            <div className="custom-select">
-              <button
-                type="button"
-                className="custom-select-button"
-                onClick={() =>
-                  setDropdownAberto(
-                    dropdownAberto === 'status'
-                      ? null
-                      : 'status'
-                  )
-                }
-                disabled={salvando}
-              >
-                <span>{formulario.status}</span>
-                <span className="custom-select-arrow">⌄</span>
-              </button>
-
-              {dropdownAberto === 'status' && (
-                <div className="custom-select-options">
-                  {statusOptions.map((status) => (
-                    <button
-                      key={status}
-                      type="button"
-                      className={`custom-select-option ${
-                        formulario.status === status
-                          ? 'selected'
-                          : ''
-                      }`}
-                      onClick={() => selecionarStatus(status)}
-                    >
-                      {status}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <CustomSelect
+              value={formulario.status}
+              options={STATUS}
+              aberto={dropdownAberto === 'status'}
+              onToggle={() => alternarDropdown('status')}
+              onSelect={(value) => selecionar('status', value)}
+              disabled={salvando}
+            />
           </div>
 
           <div className="form-group">

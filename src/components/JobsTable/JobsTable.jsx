@@ -1,6 +1,24 @@
 import './JobsTable.css'
 import BrandLogo from '../BrandLogo/BrandLogo'
 
+function Icon({ children }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  )
+}
+
 function gerarClasseStatus(status) {
   return status
     .toLowerCase()
@@ -10,12 +28,9 @@ function gerarClasseStatus(status) {
 }
 
 function formatarData(data) {
-  if (!data) {
-    return '-'
-  }
+  if (!data) return '-'
 
   const [ano, mes, dia] = data.split('-')
-
   return `${dia}/${mes}/${ano}`
 }
 
@@ -31,14 +46,20 @@ function JobsTable({
   totalVagas,
   vagasPorPagina,
 }) {
-  const inicio =
-    totalFiltrado === 0
-      ? 0
-      : (paginaAtual - 1) * vagasPorPagina + 1
+  const inicio = totalFiltrado
+    ? (paginaAtual - 1) * vagasPorPagina + 1
+    : 0
 
   const fim = Math.min(
     paginaAtual * vagasPorPagina,
     totalFiltrado
+  )
+
+  const filtrando = totalFiltrado !== totalVagas
+
+  const paginas = Array.from(
+    { length: totalPaginas },
+    (_, index) => index + 1
   )
 
   return (
@@ -64,7 +85,7 @@ function JobsTable({
                   Carregando vagas...
                 </td>
               </tr>
-            ) : vagas.length === 0 ? (
+            ) : !vagas.length ? (
               <tr>
                 <td colSpan="7" className="table-message">
                   Nenhuma vaga encontrada.
@@ -101,9 +122,7 @@ function JobsTable({
                     )}
                   </td>
 
-                  <td>
-                    {formatarData(vaga.data_candidatura)}
-                  </td>
+                  <td>{formatarData(vaga.data_candidatura)}</td>
 
                   <td>
                     <div className="platform-cell">
@@ -135,45 +154,29 @@ function JobsTable({
                         type="button"
                         className="edit-button"
                         title="Editar vaga"
+                        aria-label="Editar vaga"
                         onClick={() => onEdit(vaga)}
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
+                        <Icon>
                           <path d="M12 20h9" />
                           <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z" />
-                        </svg>
+                        </Icon>
                       </button>
 
                       <button
                         type="button"
                         className="delete-button"
                         title="Excluir vaga"
+                        aria-label="Excluir vaga"
                         onClick={() => onDelete(vaga.id)}
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
+                        <Icon>
                           <path d="M3 6h18" />
                           <path d="M8 6V4h8v2" />
                           <path d="M19 6l-1 14H6L5 6" />
                           <path d="M10 11v5" />
                           <path d="M14 11v5" />
-                        </svg>
+                        </Icon>
                       </button>
                     </div>
                   </td>
@@ -187,17 +190,8 @@ function JobsTable({
       {!carregando && (
         <div className="table-footer">
           <div className="table-count">
-            {totalFiltrado === totalVagas ? (
-              <>
-                Mostrando {inicio}–{fim} de {totalVagas}{' '}
-                vagas
-              </>
-            ) : (
-              <>
-                Mostrando {inicio}–{fim} de{' '}
-                {totalFiltrado} vagas filtradas
-              </>
-            )}
+            Mostrando {inicio}–{fim} de {totalFiltrado}{' '}
+            {filtrando ? 'vagas filtradas' : 'vagas'}
           </div>
 
           {totalPaginas > 1 && (
@@ -214,20 +208,16 @@ function JobsTable({
                 ‹
               </button>
 
-              {Array.from(
-                { length: totalPaginas },
-                (_, index) => index + 1
-              ).map((pagina) => (
+              {paginas.map((pagina) => (
                 <button
                   type="button"
                   key={pagina}
                   className={`pagination-button ${
-                    pagina === paginaAtual
-                      ? 'active'
-                      : ''
+                    pagina === paginaAtual ? 'active' : ''
                   }`}
-                  onClick={() =>
-                    onPaginaChange(pagina)
+                  onClick={() => onPaginaChange(pagina)}
+                  aria-current={
+                    pagina === paginaAtual ? 'page' : undefined
                   }
                 >
                   {pagina}

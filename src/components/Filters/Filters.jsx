@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './Filters.css'
 
-const status = [
+const STATUS = [
   'Candidatado',
   'Entrevista RH',
   'Aguardando retorno RH',
@@ -11,6 +11,21 @@ const status = [
   'Aprovado',
   'Reprovado',
 ]
+
+function alternarSelecao(item, selecionados, onChange) {
+  const novaSelecao = selecionados.includes(item)
+    ? selecionados.filter((selecionado) => selecionado !== item)
+    : [...selecionados, item]
+
+  onChange(novaSelecao)
+}
+
+function textoFiltro(selecionados, vazio, plural) {
+  if (!selecionados.length) return vazio
+  if (selecionados.length === 1) return selecionados[0]
+
+  return `${selecionados.length} ${plural}`
+}
 
 function Filters({
   empresas,
@@ -26,64 +41,18 @@ function Filters({
   const [buscaEmpresa, setBuscaEmpresa] = useState('')
 
   const empresasFiltradas = empresas.filter((empresa) =>
-    empresa.toLowerCase().includes(buscaEmpresa.toLowerCase())
+    empresa.toLowerCase().includes(buscaEmpresa.trim().toLowerCase())
   )
 
   const possuiFiltros =
-    busca.trim() ||
+    Boolean(busca.trim()) ||
     empresasSelecionadas.length > 0 ||
     statusSelecionados.length > 0
 
-  function alternarEmpresa(empresa) {
-    if (empresasSelecionadas.includes(empresa)) {
-      onEmpresasChange(
-        empresasSelecionadas.filter((item) => item !== empresa)
-      )
-    } else {
-      onEmpresasChange([
-        ...empresasSelecionadas,
-        empresa,
-      ])
-    }
-  }
-
-  function alternarStatus(itemStatus) {
-    if (statusSelecionados.includes(itemStatus)) {
-      onStatusChange(
-        statusSelecionados.filter(
-          (item) => item !== itemStatus
-        )
-      )
-    } else {
-      onStatusChange([
-        ...statusSelecionados,
-        itemStatus,
-      ])
-    }
-  }
-
-  function textoEmpresas() {
-    if (empresasSelecionadas.length === 0) {
-      return 'Todas as empresas'
-    }
-
-    if (empresasSelecionadas.length === 1) {
-      return empresasSelecionadas[0]
-    }
-
-    return `${empresasSelecionadas.length} empresas`
-  }
-
-  function textoStatus() {
-    if (statusSelecionados.length === 0) {
-      return 'Todos os status'
-    }
-
-    if (statusSelecionados.length === 1) {
-      return statusSelecionados[0]
-    }
-
-    return `${statusSelecionados.length} status`
+  function alternarDropdown(filtro) {
+    setFiltroAberto((atual) =>
+      atual === filtro ? null : filtro
+    )
   }
 
   return (
@@ -98,6 +67,7 @@ function Filters({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.35-4.35" />
@@ -107,9 +77,7 @@ function Filters({
           type="text"
           placeholder="Buscar empresa ou vaga..."
           value={busca}
-          onChange={(event) =>
-            onBuscaChange(event.target.value)
-          }
+          onChange={(event) => onBuscaChange(event.target.value)}
         />
       </div>
 
@@ -117,13 +85,7 @@ function Filters({
         <button
           type="button"
           className="filter-button"
-          onClick={() =>
-            setFiltroAberto(
-              filtroAberto === 'empresa'
-                ? null
-                : 'empresa'
-            )
-          }
+          onClick={() => alternarDropdown('empresa')}
         >
           <div className="filter-button-content">
             <svg
@@ -133,6 +95,7 @@ function Filters({
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
+              aria-hidden="true"
             >
               <path d="M3 21h18" />
               <path d="M6 21V5h12v16" />
@@ -142,10 +105,18 @@ function Filters({
               <path d="M13 13h2" />
             </svg>
 
-            <span>{textoEmpresas()}</span>
+            <span>
+              {textoFiltro(
+                empresasSelecionadas,
+                'Todas as empresas',
+                'empresas'
+              )}
+            </span>
           </div>
 
-          <span className="filter-arrow">⌄</span>
+          <span className="filter-arrow" aria-hidden="true">
+            ⌄
+          </span>
         </button>
 
         {filtroAberto === 'empresa' && (
@@ -162,11 +133,7 @@ function Filters({
             </div>
 
             <div className="filter-options">
-              {empresasFiltradas.length === 0 ? (
-                <div className="filter-option">
-                  Nenhuma empresa encontrada
-                </div>
-              ) : (
+              {empresasFiltradas.length ? (
                 empresasFiltradas.map((empresa) => (
                   <label
                     className="filter-option"
@@ -178,13 +145,21 @@ function Filters({
                         empresa
                       )}
                       onChange={() =>
-                        alternarEmpresa(empresa)
+                        alternarSelecao(
+                          empresa,
+                          empresasSelecionadas,
+                          onEmpresasChange
+                        )
                       }
                     />
 
                     <span>{empresa}</span>
                   </label>
                 ))
+              ) : (
+                <div className="filter-option">
+                  Nenhuma empresa encontrada
+                </div>
               )}
             </div>
           </div>
@@ -195,13 +170,7 @@ function Filters({
         <button
           type="button"
           className="filter-button"
-          onClick={() =>
-            setFiltroAberto(
-              filtroAberto === 'status'
-                ? null
-                : 'status'
-            )
-          }
+          onClick={() => alternarDropdown('status')}
         >
           <div className="filter-button-content">
             <svg
@@ -213,36 +182,47 @@ function Filters({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <path d="M20.59 13.41 11 3.83V3H4v7h.83l9.58 9.59a2 2 0 0 0 2.82 0l3.36-3.36a2 2 0 0 0 0-2.82Z" />
               <circle cx="7.5" cy="6.5" r="1" />
             </svg>
 
-            <span>{textoStatus()}</span>
+            <span>
+              {textoFiltro(
+                statusSelecionados,
+                'Todos os status',
+                'status'
+              )}
+            </span>
           </div>
 
-          <span className="filter-arrow">⌄</span>
+          <span className="filter-arrow" aria-hidden="true">
+            ⌄
+          </span>
         </button>
 
         {filtroAberto === 'status' && (
           <div className="filter-dropdown">
             <div className="filter-options">
-              {status.map((itemStatus) => (
+              {STATUS.map((status) => (
                 <label
                   className="filter-option"
-                  key={itemStatus}
+                  key={status}
                 >
                   <input
                     type="checkbox"
-                    checked={statusSelecionados.includes(
-                      itemStatus
-                    )}
+                    checked={statusSelecionados.includes(status)}
                     onChange={() =>
-                      alternarStatus(itemStatus)
+                      alternarSelecao(
+                        status,
+                        statusSelecionados,
+                        onStatusChange
+                      )
                     }
                   />
 
-                  <span>{itemStatus}</span>
+                  <span>{status}</span>
                 </label>
               ))}
             </div>
