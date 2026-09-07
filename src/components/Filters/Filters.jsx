@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './Filters.css'
 
-const STATUS = [
+const STATUS_OPTIONS = [
   'Candidatado',
   'Entrevista RH',
   'Aguardando retorno RH',
@@ -205,7 +205,7 @@ function Filters({
         {filtroAberto === 'status' && (
           <div className="filter-dropdown">
             <div className="filter-options">
-              {STATUS.map((status) => (
+              {STATUS_OPTIONS.map((status) => (
                 <label
                   className="filter-option"
                   key={status}

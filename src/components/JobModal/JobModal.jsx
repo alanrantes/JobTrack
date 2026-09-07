@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './JobModal.css'
 
-const STATUS = [
+const STATUS_OPTIONS = [
   'Candidatado',
   'Entrevista RH',
   'Aguardando retorno RH',
@@ -12,7 +12,7 @@ const STATUS = [
   'Reprovado',
 ]
 
-const PLATAFORMAS = [
+const PLATFORM_OPTIONS = [
   'LinkedIn',
   'Gupy',
   'Indeed',
@@ -251,7 +251,7 @@ function JobModal({
               <CustomSelect
                 value={formulario.plataforma}
                 placeholder="Selecione"
-                options={PLATAFORMAS}
+                options={PLATFORM_OPTIONS}
                 aberto={dropdownAberto === 'plataforma'}
                 onToggle={() => alternarDropdown('plataforma')}
                 onSelect={(value) =>
@@ -302,10 +302,12 @@ function JobModal({
 
             <CustomSelect
               value={formulario.status}
-              options={STATUS}
+              options={STATUS_OPTIONS}
               aberto={dropdownAberto === 'status'}
               onToggle={() => alternarDropdown('status')}
-              onSelect={(value) => selecionar('status', value)}
+              onSelect={(value) =>
+                selecionar('status', value)
+              }
               disabled={salvando}
             />
           </div>
