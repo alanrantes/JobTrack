@@ -11,12 +11,6 @@ Aplicação web para organização e acompanhamento de processos seletivos, dese
 
 O sistema permite que cada usuário registre suas candidaturas, acompanhe o andamento dos processos e visualize de forma centralizada informações como empresa, vaga, plataforma, status e próxima etapa.
 
-## Aplicação
-
-Acesse o JobTrack:
-
-https://usejobtrack.vercel.app
-
 ## Funcionalidades
 
 ### Autenticação
