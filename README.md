@@ -9,7 +9,13 @@
 
 Aplicação web para organização e acompanhamento de processos seletivos, desenvolvida com React e Supabase.
 
-O sistema permite que cada usuário registre suas candidaturas, acompanhe o andamento dos processos e visualize de forma centralizada informações como empresa, vaga, plataforma, status e próxima etapa.
+O JobTrack permite registrar candidaturas e acompanhar de forma centralizada o andamento de cada processo seletivo, reunindo informações como empresa, vaga, plataforma, status e próxima etapa.
+
+## Aplicação
+
+O sistema está disponível online:
+
+**https://usejobtrack.vercel.app**
 
 ## Funcionalidades
 
@@ -27,7 +33,7 @@ O sistema permite que cada usuário registre suas candidaturas, acompanhe o anda
 - edição de candidaturas;
 - exclusão de vagas;
 - registro da empresa e cargo;
-- registro da plataforma utilizada;
+- registro da plataforma de candidatura;
 - controle da data de candidatura;
 - acompanhamento do status do processo;
 - registro da próxima etapa;
@@ -36,11 +42,11 @@ O sistema permite que cada usuário registre suas candidaturas, acompanhe o anda
 ### Acompanhamento
 
 - total de candidaturas;
-- processos em andamento;
 - entrevistas;
+- processos em andamento;
 - aprovações;
 - reprovações;
-- atualização dos indicadores de acordo com as candidaturas cadastradas.
+- atualização automática dos indicadores.
 
 ### Filtros e Pesquisa
 
@@ -85,9 +91,9 @@ O sistema permite que cada usuário registre suas candidaturas, acompanhe o anda
 
 ## Segurança e Isolamento de Dados
 
-O JobTrack utiliza autenticação do Supabase e políticas de Row Level Security (RLS) no banco de dados.
+O JobTrack utiliza o Supabase Authentication para autenticação dos usuários e políticas de Row Level Security (RLS) para controle de acesso aos dados.
 
-Cada candidatura é vinculada ao usuário autenticado, garantindo que cada pessoa possa visualizar e gerenciar somente as próprias vagas.
+Cada candidatura é vinculada ao usuário autenticado, permitindo que cada pessoa visualize e gerencie somente as próprias vagas.
 
 ## Estrutura do Projeto
 
@@ -115,50 +121,14 @@ src/
 └── main.jsx
 ```
 
-## Executando o Projeto
-
-Clone o repositório:
-
-```bash
-git clone https://github.com/alanrantes/JobTrack.git
-```
-
-Acesse a pasta:
-
-```bash
-cd JobTrack
-```
-
-Instale as dependências:
-
-```bash
-npm install
-```
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-VITE_SUPABASE_URL=sua_url_supabase
-VITE_SUPABASE_KEY=sua_chave_publica_supabase
-VITE_LOGO_DEV_KEY=sua_chave_publica_logo_dev
-```
-
-Execute o projeto:
-
-```bash
-npm run dev
-```
-
-A aplicação estará disponível no endereço informado pelo Vite no terminal.
-
 ## Deploy
 
-O frontend está publicado na Vercel e integrado ao repositório do GitHub.
+A aplicação está publicada na Vercel e integrada ao repositório do GitHub, com deploy automático da versão de produção.
 
-Atualizações enviadas para a branch de produção são automaticamente compiladas e publicadas pela Vercel.
+**Acesse:** https://usejobtrack.vercel.app
 
 ## Objetivo do Projeto
 
 O JobTrack surgiu da necessidade de ter uma ferramenta simples e centralizada para acompanhar candidaturas durante a busca por oportunidades profissionais.
 
-A proposta é facilitar o controle dos processos seletivos sem depender de planilhas, permitindo acompanhar rapidamente onde cada candidatura está e quais são os próximos passos.
+A proposta é facilitar o controle dos processos seletivos sem depender de planilhas, permitindo visualizar rapidamente o andamento de cada candidatura e seus próximos passos.
