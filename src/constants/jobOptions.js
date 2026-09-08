@@ -16,6 +16,7 @@ export const PLATFORM_OPTIONS = [
   'Glassdoor',
   'InfoJobs',
   'Sólides',
+  'Catho',
   'Nerdin',
   'Remotar',
   'Site da empresa',
