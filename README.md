@@ -7,9 +7,11 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white)
 
-Aplicação web para organização e acompanhamento de processos seletivos, desenvolvida com React e Supabase.
+<p align="justify">O JobTrack surgiu de uma necessidade pessoal durante minha busca por oportunidades: organizar de forma simples as vagas em que me candidatei e acompanhar o andamento de cada processo seletivo. A partir disso, desenvolvi uma plataforma gratuita e acessível para facilitar esse controle, principalmente para quem não utiliza ou não possui acesso a ferramentas como o Excel. </p>
 
-O JobTrack permite registrar candidaturas e acompanhar de forma centralizada o andamento de cada processo seletivo, reunindo informações como empresa, vaga, plataforma, status e próxima etapa.
+O objetivo é permitir que qualquer pessoa organize suas candidaturas, acompanhe cada etapa e tenha uma visão clara da sua busca por uma nova oportunidade.
+
+**Link:** https://usejobtrack.vercel.app
 
 ## Funcionalidades
 
@@ -85,9 +87,7 @@ O JobTrack permite registrar candidaturas e acompanhar de forma centralizada o a
 
 ## Segurança e Isolamento de Dados
 
-O JobTrack utiliza o Supabase Authentication para autenticação dos usuários e políticas de Row Level Security (RLS) para controle de acesso aos dados.
-
-Cada candidatura é vinculada ao usuário autenticado, permitindo que cada pessoa visualize e gerencie somente as próprias vagas.
+<p align="justify">O JobTrack utiliza o Supabase Authentication para autenticação dos usuários e políticas de Row Level Security (RLS) para controle de acesso aos dados. Cada candidatura é vinculada ao usuário autenticado, permitindo que cada pessoa visualize e gerencie somente as próprias vagas.</p>
 
 ## Estrutura do Projeto
 
@@ -120,9 +120,3 @@ src/
 A aplicação está publicada na Vercel e integrada ao repositório do GitHub, com deploy automático da versão de produção.
 
 **Acesse:** https://usejobtrack.vercel.app
-
-## Objetivo do Projeto
-
-O JobTrack surgiu da necessidade de ter uma ferramenta simples e centralizada para acompanhar candidaturas durante a busca por oportunidades profissionais.
-
-A proposta é facilitar o controle dos processos seletivos sem depender de planilhas, permitindo visualizar rapidamente o andamento de cada candidatura e seus próximos passos.
