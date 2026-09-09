@@ -304,7 +304,7 @@ function Presentation() {
         <PresentationVisual />
 
         <div className="auth-presentation-copy">
-          <h1>Sua busca por oportunidades, organizada.</h1>
+          <h1>Sua busca por oportunidades, mais organizada.</h1>
           <p>Acompanhe candidaturas e etapas em um só lugar.</p>
         </div>
       </div>
