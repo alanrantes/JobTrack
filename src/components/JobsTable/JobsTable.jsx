@@ -34,6 +34,41 @@ function formatarData(data) {
   return `${dia}/${mes}/${ano}`
 }
 
+function gerarPaginas(paginaAtual, totalPaginas) {
+  if (totalPaginas <= 7) {
+    return Array.from(
+      { length: totalPaginas },
+      (_, index) => index + 1
+    )
+  }
+
+  if (paginaAtual <= 4) {
+    return [1, 2, 3, 4, 5, '...', totalPaginas]
+  }
+
+  if (paginaAtual >= totalPaginas - 3) {
+    return [
+      1,
+      '...',
+      totalPaginas - 4,
+      totalPaginas - 3,
+      totalPaginas - 2,
+      totalPaginas - 1,
+      totalPaginas,
+    ]
+  }
+
+  return [
+    1,
+    '...',
+    paginaAtual - 1,
+    paginaAtual,
+    paginaAtual + 1,
+    '...',
+    totalPaginas,
+  ]
+}
+
 function JobsTable({
   vagas,
   carregando,
@@ -57,9 +92,9 @@ function JobsTable({
 
   const filtrando = totalFiltrado !== totalVagas
 
-  const paginas = Array.from(
-    { length: totalPaginas },
-    (_, index) => index + 1
+  const paginas = gerarPaginas(
+    paginaAtual,
+    totalPaginas
   )
 
   return (
@@ -208,21 +243,30 @@ function JobsTable({
                 ‹
               </button>
 
-              {paginas.map((pagina) => (
-                <button
-                  type="button"
-                  key={pagina}
-                  className={`pagination-button ${
-                    pagina === paginaAtual ? 'active' : ''
-                  }`}
-                  onClick={() => onPaginaChange(pagina)}
-                  aria-current={
-                    pagina === paginaAtual ? 'page' : undefined
-                  }
-                >
-                  {pagina}
-                </button>
-              ))}
+              {paginas.map((pagina, index) =>
+                pagina === '...' ? (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="pagination-ellipsis"
+                  >
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    key={pagina}
+                    className={`pagination-button ${
+                      pagina === paginaAtual ? 'active' : ''
+                    }`}
+                    onClick={() => onPaginaChange(pagina)}
+                    aria-current={
+                      pagina === paginaAtual ? 'page' : undefined
+                    }
+                  >
+                    {pagina}
+                  </button>
+                )
+              )}
 
               <button
                 type="button"
