@@ -459,6 +459,14 @@
   gap: 21px;
 }
 
+/* Ação abaixo do campo */
+
+.auth-field-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -2px;
+}
+
 .auth-forgot {
   font-size: 12px;
 }

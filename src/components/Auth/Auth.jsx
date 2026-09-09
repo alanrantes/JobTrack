@@ -417,14 +417,7 @@ function AuthField({
 }) {
   return (
     <div className="form-field">
-      {action ? (
-        <div className="form-label-row">
-          <label htmlFor={`auth-${name}`}>{label}</label>
-          {action}
-        </div>
-      ) : (
-        <label htmlFor={`auth-${name}`}>{label}</label>
-      )}
+      <label htmlFor={`auth-${name}`}>{label}</label>
 
       <input
         className="form-control"
@@ -435,6 +428,12 @@ function AuthField({
       />
 
       {helper && <span className="form-help">{helper}</span>}
+
+      {action && (
+        <div className="auth-field-action">
+          {action}
+        </div>
+      )}
     </div>
   )
 }
