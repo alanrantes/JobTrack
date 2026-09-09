@@ -4,7 +4,6 @@ import Filters from '../Filters/Filters'
 import JobsTable from '../JobsTable/JobsTable'
 import JobModal from '../JobModal/JobModal'
 import ConfirmModal from '../ConfirmModal/ConfirmModal'
-import UserBar from '../UserBar/UserBar'
 
 import { useVagas } from '../../hooks/useVagas'
 import { useFiltrosVagas } from '../../hooks/useFiltrosVagas'
@@ -59,8 +58,7 @@ function JobDashboard({
   } = useFiltrosVagas(vagas)
 
   async function salvar(vaga) {
-    const modoCriacao =
-      !vagaEditando
+    const modoCriacao = !vagaEditando
 
     const salvou =
       await salvarVaga(vaga)
@@ -74,14 +72,10 @@ function JobDashboard({
 
   return (
     <main className="app">
-      <UserBar
+      <Header
         nome={nomeUsuario}
         onLogout={onLogout}
-        loading={saindo}
-      />
-
-      <Header
-        onNewJob={abrirNovaVaga}
+        logoutLoading={saindo}
       />
 
       <SummaryCards vagas={vagas} />
@@ -104,6 +98,9 @@ function JobDashboard({
         }
         onClearFilters={
           limparFiltros
+        }
+        onNewJob={
+          abrirNovaVaga
         }
       />
 

@@ -26,6 +26,7 @@ function Filters({
   statusSelecionados,
   onStatusChange,
   onClearFilters,
+  onNewJob,
 }) {
   const [filtroAberto, setFiltroAberto] = useState(null)
   const [buscaEmpresa, setBuscaEmpresa] = useState('')
@@ -67,7 +68,9 @@ function Filters({
           type="text"
           placeholder="Buscar empresa ou vaga..."
           value={busca}
-          onChange={(event) => onBuscaChange(event.target.value)}
+          onChange={(event) =>
+            onBuscaChange(event.target.value)
+          }
         />
       </div>
 
@@ -104,7 +107,10 @@ function Filters({
             </span>
           </div>
 
-          <span className="filter-arrow" aria-hidden="true">
+          <span
+            className="filter-arrow"
+            aria-hidden="true"
+          >
             ⌄
           </span>
         </button>
@@ -187,7 +193,10 @@ function Filters({
             </span>
           </div>
 
-          <span className="filter-arrow" aria-hidden="true">
+          <span
+            className="filter-arrow"
+            aria-hidden="true"
+          >
             ⌄
           </span>
         </button>
@@ -227,6 +236,15 @@ function Filters({
         disabled={!possuiFiltros}
       >
         Limpar filtros
+      </button>
+
+      <button
+        type="button"
+        className="filters-new-job"
+        onClick={onNewJob}
+      >
+        <span aria-hidden="true">+</span>
+        Nova vaga
       </button>
     </section>
   )
