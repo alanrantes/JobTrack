@@ -1,23 +1,25 @@
 :root {
   font-family: Arial, Helvetica, sans-serif;
-
   color: #1f2937;
-  background-color: #f8fafc;
+  background: #f8fafc;
 
   --color-bg: #f8fafc;
-  --color-surface: #ffffff;
+  --color-bg-soft: #f4f7fb;
+  --color-surface: #fff;
   --color-surface-soft: #f8fafc;
 
   --color-text: #1f2937;
   --color-text-strong: #111827;
   --color-text-muted: #64748b;
   --color-text-light: #94a3b8;
+  --color-placeholder: #9ca9bb;
 
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
 
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
+  --color-primary-soft: #eff6ff;
 
   --color-success: #059669;
   --color-warning: #d97706;
@@ -35,24 +37,28 @@
 
   --transition-fast: 0.15s ease;
   --transition-default: 0.2s ease;
+
+  --control-height: clamp(50px, 3vw, 54px);
+  --control-font-size: clamp(13px, 0.85vw, 15px);
 }
 
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-html {
+html,
+body,
+#root {
   min-width: 320px;
   min-height: 100%;
 }
 
 body {
-  min-width: 320px;
   min-height: 100vh;
-  background-color: var(--color-bg);
   color: var(--color-text);
+  background: var(--color-bg);
 }
 
 button,
@@ -60,6 +66,7 @@ input,
 select,
 textarea {
   font: inherit;
+  outline: none;
 }
 
 button {
@@ -68,13 +75,6 @@ button {
 
 button:disabled {
   cursor: default;
-}
-
-input,
-select,
-textarea,
-button {
-  outline: none;
 }
 
 a {
@@ -86,6 +86,134 @@ svg {
   display: block;
 }
 
-#root {
-  min-height: 100vh;
+/* Formulários */
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field label {
+  color: var(--color-text);
+  font-size: clamp(12px, 0.75vw, 13px);
+  font-weight: 600;
+}
+
+.form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.form-control {
+  width: 100%;
+  height: var(--control-height);
+  padding: 0 15px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--control-font-size);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.form-control::placeholder {
+  color: var(--color-placeholder);
+}
+
+.form-control:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.09);
+}
+
+.form-control:disabled {
+  background: var(--color-surface-soft);
+  opacity: 0.75;
+}
+
+.form-help {
+  color: var(--color-text-light);
+  font-size: 11px;
+}
+
+/* Botões */
+
+.btn {
+  border: 0;
+  font-weight: 600;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.btn-primary {
+  width: 100%;
+  height: clamp(48px, 3vw, 52px);
+  color: #fff;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  font-size: var(--control-font-size);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.23);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-link {
+  padding: 0;
+  color: var(--color-primary);
+  background: transparent;
+  font-size: inherit;
+}
+
+.btn-link:hover:not(:disabled) {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+}
+
+/* Feedback */
+
+.feedback {
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.feedback-erro {
+  color: #b91c1c;
+  background: #fff7f7;
+  border: 1px solid #fecaca;
+}
+
+.feedback-sucesso {
+  color: #047857;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
 }
